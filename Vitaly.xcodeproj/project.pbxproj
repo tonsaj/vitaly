@@ -1,0 +1,949 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0C9B80B3B866A5465E7C8A6A /* TrendChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058538FCC040AFD4BB510CBE /* TrendChartView.swift */; };
+		0D26593E8996DE050B146384 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2731C5EAF97F4FB7D2D20395 /* AppCoordinator.swift */; };
+		12DEA86904C5FC75F33FB339 /* HeartData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B7098C2A1DEDACE003B68F0 /* HeartData.swift */; };
+		164446AE87307171F3A0A9E5 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB886073FD89DFD3D7FB19C2 /* OnboardingView.swift */; };
+		18CA6A191E7FA3A39CB9F179 /* HealthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC2045FC2B9FC6EA3299783 /* HealthViewModel.swift */; };
+		1901D8062F68BF64090401DF /* StrainDetailEnhancedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36887E7C2DD91485EB2B0037 /* StrainDetailEnhancedView.swift */; };
+		1906980FDB39269859D93C3C /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = D946F16AA945106635A5AF65 /* User.swift */; };
+		201F725D3D71466187DD8932 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 45F55DD811CBEC1CEAAB1618 /* Secrets.plist */; };
+		22895812FEF2957898E018FC /* SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6463995B3B731E0AC0BDF339 /* SyncService.swift */; };
+		26A7E05E8DB8C91E81F5CC38 /* GeminiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 860463F52DEBB7C263D572EF /* GeminiService.swift */; };
+		2B719CBEFD1B2C38FC95B6D1 /* iOSHealthUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73CBCA9F33DBE8B34EC3C02 /* iOSHealthUITests.swift */; };
+		2E79D9286A1C5A7A3D3A485B /* ActivityDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B4818FE1584E8D64DF6A0A /* ActivityDetailView.swift */; };
+		3C3471FDAB81A72CED5613F1 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEF3984F09E5B73B235CA0E8 /* LoginView.swift */; };
+		3F85B33B71DE361FCAA77BFC /* HeartRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBEB0427E36739E9DC5B6B5 /* HeartRateView.swift */; };
+		4385C5632204BFAB33A1131B /* SleepData.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB3016A3858A7020E0976C07 /* SleepData.swift */; };
+		446BA358AE74B93875C55051 /* iOSHealthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2C9DB3636A2CB9EBC724330 /* iOSHealthTests.swift */; };
+		4A783961CC2D13AD33B9C2BF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = CA433C95A4A7DE1FB29E3DD1 /* FirebaseAuth */; };
+		4CE515EDB9FA84D46991345F /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DA7D7A2F1116B2FFB1F2EC4 /* Color+Extensions.swift */; };
+		508FF34998CB850A5A6BEB10 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 927DA3F7FD6BA227E2EA1844 /* Assets.xcassets */; };
+		517F215D3F25356D321945C7 /* MetricDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61495CC16F01B9E1FAC11E9 /* MetricDetailSheet.swift */; };
+		64092D641CCBEBDD6D828EBC /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6949EBCF722DC5BE31922237 /* Date+Extensions.swift */; };
+		683B0948C8CBC7DAD0BADA86 /* RecoveryDetailEnhancedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69495F15485CB3C2EF6F2861 /* RecoveryDetailEnhancedView.swift */; };
+		69A52F3DF9E3700E33E9074D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67BE44700C1DA7FCB1DD83D9 /* SettingsView.swift */; };
+		730A92FE558B057102E7A91E /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5CAA58CDE066BDC1A1CD9D /* SettingsViewModel.swift */; };
+		786CA4B1632D9F8559B141D9 /* RecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6958094C6632BC0BDE5065A /* RecoveryView.swift */; };
+		7FB77D81C207E929BDA75584 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE4F795291908EC77C8C3E37 /* AuthViewModel.swift */; };
+		8469E5B8E61D66E653D5638A /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D472CA50AC4733FD4F37116F /* HealthKitService.swift */; };
+		8F79F7842CC8646588C80E7B /* SleepDetailEnhancedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4629C34A18BEDB55C2F05949 /* SleepDetailEnhancedView.swift */; };
+		959CACFE8D2B5E1E81074FE4 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2904DBAC882C034AB1A89C47 /* DashboardViewModel.swift */; };
+		96A661E943DA4E7E47D0156F /* AIInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0819C048BBA44D658DE6559 /* AIInsightsView.swift */; };
+		9DDFBB3DA2143A02AA2433D4 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 696A7A5B30AD0080A967FB7E /* AuthService.swift */; };
+		9EA0BD9E0E0C519761E04F9D /* AIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFC125A9B763B3AC56254B8A /* AIViewModel.swift */; };
+		A0E492D4D4E43C9D8A539D35 /* AIInsight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72098DEFD49AE49090D4D95A /* AIInsight.swift */; };
+		A84D5601549CEFA655F5D465 /* SleepDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4CD9DDFEED0E345E8BD91F /* SleepDetailView.swift */; };
+		AC0FC2FA15A36FEB286D5B0D /* InsightDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68FB53F888AD61E66ACD59E8 /* InsightDetailView.swift */; };
+		AFD1132A8EF2F9868C8143ED /* InsightCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67D9891B23A0660F1354F612 /* InsightCardView.swift */; };
+		B396576E71BB63FE44BDFFC8 /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = 1CDEAD6F55B89FB98CC96F7B /* GoogleGenerativeAI */; };
+		B5B859EE48DA650BFBFD1303 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3626898580698DC32C0A7E /* View+Extensions.swift */; };
+		BDA56DC732637391FC1FE8FD /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B0AC8D77F9F60E7964E8EF /* SignUpView.swift */; };
+		BF442D3FF287BF415E40B770 /* VitalyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FB205D3EDFC3F99AC443E0A /* VitalyApp.swift */; };
+		C2AFF16B7DDED306D02B1CBA /* AuthNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B8CB883D9C2CC67449A677 /* AuthNavigationView.swift */; };
+		C83E04B55A1BF4DDEE29D958 /* AIChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D168D89EA6C9CCAAAA1931 /* AIChatView.swift */; };
+		CE036570FB66F14707D02CE0 /* FirestoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D69859C5C3BA61FC581F5C9A /* FirestoreService.swift */; };
+		CFAB70B7115AD19044C02F13 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 99881865D51241A1CBE4337F /* FirebaseFirestore */; };
+		D3DB1F2CB05B7D2AE64975B3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 52C01D643FDDE5300DE04EEF /* GoogleService-Info.plist */; };
+		DA7A58956B1252AABD7C2290 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA73F58ECC6CAB9B8125262 /* APIConfig.swift */; };
+		E03A05640B16B782B1F7D4FB /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85AEDE2343F0F143DB1B9A0 /* DashboardView.swift */; };
+		EF1A0DF848FC413118C28C01 /* ActivityData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3EFB10FA7D0D40A0ECA588 /* ActivityData.swift */; };
+		F1FDCADFB4355477C82C30B4 /* HealthMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B18CE7FE36375AD5E7F7F69 /* HealthMetric.swift */; };
+		F96DE050AA66C17C465E0969 /* MetricCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC62B8991A80658A99964789 /* MetricCardView.swift */; };
+		FA5E63C3FF21C1C9BC78602F /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8443D3B30427F0BC77325B3 /* MainTabView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DAF8F06EF94076C59725609C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F888FF1C915A62B7FBC9D8D7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A737F34078264378B75DAD0;
+			remoteInfo = Vitaly;
+		};
+		F8B7F7E8D820C3F8EF675608 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F888FF1C915A62B7FBC9D8D7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A737F34078264378B75DAD0;
+			remoteInfo = Vitaly;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		058538FCC040AFD4BB510CBE /* TrendChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendChartView.swift; sourceTree = "<group>"; };
+		14B8CB883D9C2CC67449A677 /* AuthNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNavigationView.swift; sourceTree = "<group>"; };
+		2731C5EAF97F4FB7D2D20395 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
+		2904DBAC882C034AB1A89C47 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		2D3626898580698DC32C0A7E /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
+		2F3EFB10FA7D0D40A0ECA588 /* ActivityData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityData.swift; sourceTree = "<group>"; };
+		33D168D89EA6C9CCAAAA1931 /* AIChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIChatView.swift; sourceTree = "<group>"; };
+		36887E7C2DD91485EB2B0037 /* StrainDetailEnhancedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrainDetailEnhancedView.swift; sourceTree = "<group>"; };
+		3B7098C2A1DEDACE003B68F0 /* HeartData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartData.swift; sourceTree = "<group>"; };
+		45F55DD811CBEC1CEAAB1618 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Secrets.plist; sourceTree = "<group>"; };
+		4629C34A18BEDB55C2F05949 /* SleepDetailEnhancedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepDetailEnhancedView.swift; sourceTree = "<group>"; };
+		4DA7D7A2F1116B2FFB1F2EC4 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
+		4FB205D3EDFC3F99AC443E0A /* VitalyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VitalyApp.swift; sourceTree = "<group>"; };
+		52C01D643FDDE5300DE04EEF /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		5CBEB0427E36739E9DC5B6B5 /* HeartRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateView.swift; sourceTree = "<group>"; };
+		5E4CD9DDFEED0E345E8BD91F /* SleepDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepDetailView.swift; sourceTree = "<group>"; };
+		6463995B3B731E0AC0BDF339 /* SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncService.swift; sourceTree = "<group>"; };
+		65D0242B18B850A4AAA65F12 /* Vitaly.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Vitaly.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		67BE44700C1DA7FCB1DD83D9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		67D9891B23A0660F1354F612 /* InsightCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightCardView.swift; sourceTree = "<group>"; };
+		68FB53F888AD61E66ACD59E8 /* InsightDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightDetailView.swift; sourceTree = "<group>"; };
+		69495F15485CB3C2EF6F2861 /* RecoveryDetailEnhancedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryDetailEnhancedView.swift; sourceTree = "<group>"; };
+		6949EBCF722DC5BE31922237 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
+		696A7A5B30AD0080A967FB7E /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		6B18CE7FE36375AD5E7F7F69 /* HealthMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthMetric.swift; sourceTree = "<group>"; };
+		72098DEFD49AE49090D4D95A /* AIInsight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInsight.swift; sourceTree = "<group>"; };
+		860463F52DEBB7C263D572EF /* GeminiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiService.swift; sourceTree = "<group>"; };
+		87B0AC8D77F9F60E7964E8EF /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
+		8EC2045FC2B9FC6EA3299783 /* HealthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthViewModel.swift; sourceTree = "<group>"; };
+		927DA3F7FD6BA227E2EA1844 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A66E88AEDBE33AC6399412DC /* iOSHealth.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOSHealth.entitlements; sourceTree = "<group>"; };
+		A85AEDE2343F0F143DB1B9A0 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		AC5CAA58CDE066BDC1A1CD9D /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		BFC125A9B763B3AC56254B8A /* AIViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIViewModel.swift; sourceTree = "<group>"; };
+		C2C9DB3636A2CB9EBC724330 /* iOSHealthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSHealthTests.swift; sourceTree = "<group>"; };
+		CC62B8991A80658A99964789 /* MetricCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricCardView.swift; sourceTree = "<group>"; };
+		CE4F795291908EC77C8C3E37 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		D472CA50AC4733FD4F37116F /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
+		D69859C5C3BA61FC581F5C9A /* FirestoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreService.swift; sourceTree = "<group>"; };
+		D6E9DF925389383798442FCF /* VitalyTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = VitalyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D73CBCA9F33DBE8B34EC3C02 /* iOSHealthUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSHealthUITests.swift; sourceTree = "<group>"; };
+		D8443D3B30427F0BC77325B3 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		D946F16AA945106635A5AF65 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		E0819C048BBA44D658DE6559 /* AIInsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInsightsView.swift; sourceTree = "<group>"; };
+		E0B4818FE1584E8D64DF6A0A /* ActivityDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityDetailView.swift; sourceTree = "<group>"; };
+		EB3016A3858A7020E0976C07 /* SleepData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepData.swift; sourceTree = "<group>"; };
+		EEC303E3CBE5F609AF30A8A2 /* VitalyUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = VitalyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EEF3984F09E5B73B235CA0E8 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		EFA73F58ECC6CAB9B8125262 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
+		F61495CC16F01B9E1FAC11E9 /* MetricDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricDetailSheet.swift; sourceTree = "<group>"; };
+		F6958094C6632BC0BDE5065A /* RecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryView.swift; sourceTree = "<group>"; };
+		F9DA8C3A4C26DAD07A4F22DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		FB886073FD89DFD3D7FB19C2 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		76ADCBA68FFBDC61ED353104 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4A783961CC2D13AD33B9C2BF /* FirebaseAuth in Frameworks */,
+				CFAB70B7115AD19044C02F13 /* FirebaseFirestore in Frameworks */,
+				B396576E71BB63FE44BDFFC8 /* GoogleGenerativeAI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		014786309B03DEFF337736E4 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				F7E44AEE4DEC1C2CC18BE9A8 /* ViewModels */,
+				CB81E193B1669B1EBD893324 /* Views */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		0D196D4DF303A6E45909E368 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				CE4F795291908EC77C8C3E37 /* AuthViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		0EB535E553C7928C336167D9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				65D0242B18B850A4AAA65F12 /* Vitaly.app */,
+				D6E9DF925389383798442FCF /* VitalyTests.xctest */,
+				EEC303E3CBE5F609AF30A8A2 /* VitalyUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1411C0604D1967D2683BF4EC /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				46EBFE3A53E06A7110201939 /* ViewModels */,
+				D77348B3CD5741AFD9EA12FB /* Views */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		29CA25FF06DD539995BFC64D /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				8EC2045FC2B9FC6EA3299783 /* HealthViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		3A2F8E12D6E0194D79605ADE /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				2F3EFB10FA7D0D40A0ECA588 /* ActivityData.swift */,
+				72098DEFD49AE49090D4D95A /* AIInsight.swift */,
+				6B18CE7FE36375AD5E7F7F69 /* HealthMetric.swift */,
+				3B7098C2A1DEDACE003B68F0 /* HeartData.swift */,
+				EB3016A3858A7020E0976C07 /* SleepData.swift */,
+				D946F16AA945106635A5AF65 /* User.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		46EBFE3A53E06A7110201939 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				AC5CAA58CDE066BDC1A1CD9D /* SettingsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		4B8E48B59146F41FB84400DB /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				F6F6BA99237ED373AF5040FB /* Components */,
+				7BA723048B6A07F9BCCAB4C5 /* Extensions */,
+				3A2F8E12D6E0194D79605ADE /* Models */,
+				9B511E850B1BD78DFCBD8331 /* Services */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		58294176FFC965D9990AD1AC /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				14B8CB883D9C2CC67449A677 /* AuthNavigationView.swift */,
+				EEF3984F09E5B73B235CA0E8 /* LoginView.swift */,
+				FB886073FD89DFD3D7FB19C2 /* OnboardingView.swift */,
+				87B0AC8D77F9F60E7964E8EF /* SignUpView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5CF116114606327B8417F6EA /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				67CB34A441B3F229A01C310F /* ViewModels */,
+				BDDD447420007EC67663E562 /* Views */,
+			);
+			path = AI;
+			sourceTree = "<group>";
+		};
+		66BF6980AF75847DB29A5DD0 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				2731C5EAF97F4FB7D2D20395 /* AppCoordinator.swift */,
+				4FB205D3EDFC3F99AC443E0A /* VitalyApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		67CB34A441B3F229A01C310F /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				BFC125A9B763B3AC56254B8A /* AIViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		6E8612DD4DC875A71358567E = {
+			isa = PBXGroup;
+			children = (
+				CB031CF8EA21DCDC2A3C8DC0 /* iOSHealth */,
+				F35BBCF77270BC6E0AC1AE60 /* iOSHealthTests */,
+				FC7269B094AC4939CD16CAE5 /* iOSHealthUITests */,
+				0EB535E553C7928C336167D9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6EE6D878521D137E77B022ED /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				927DA3F7FD6BA227E2EA1844 /* Assets.xcassets */,
+				52C01D643FDDE5300DE04EEF /* GoogleService-Info.plist */,
+				F9DA8C3A4C26DAD07A4F22DC /* Info.plist */,
+				45F55DD811CBEC1CEAAB1618 /* Secrets.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		7BA723048B6A07F9BCCAB4C5 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				4DA7D7A2F1116B2FFB1F2EC4 /* Color+Extensions.swift */,
+				6949EBCF722DC5BE31922237 /* Date+Extensions.swift */,
+				2D3626898580698DC32C0A7E /* View+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		88025D691EAAC17B1BD2EC9B /* Supporting */ = {
+			isa = PBXGroup;
+			children = (
+				EFA73F58ECC6CAB9B8125262 /* APIConfig.swift */,
+			);
+			path = Supporting;
+			sourceTree = "<group>";
+		};
+		9B511E850B1BD78DFCBD8331 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				696A7A5B30AD0080A967FB7E /* AuthService.swift */,
+				D69859C5C3BA61FC581F5C9A /* FirestoreService.swift */,
+				860463F52DEBB7C263D572EF /* GeminiService.swift */,
+				D472CA50AC4733FD4F37116F /* HealthKitService.swift */,
+				6463995B3B731E0AC0BDF339 /* SyncService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		B1765B16613E207E3A50C3E1 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				0D196D4DF303A6E45909E368 /* ViewModels */,
+				58294176FFC965D9990AD1AC /* Views */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		BDDD447420007EC67663E562 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				33D168D89EA6C9CCAAAA1931 /* AIChatView.swift */,
+				E0819C048BBA44D658DE6559 /* AIInsightsView.swift */,
+				67D9891B23A0660F1354F612 /* InsightCardView.swift */,
+				68FB53F888AD61E66ACD59E8 /* InsightDetailView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		C132943A9FBE647A35F4638F /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				5CF116114606327B8417F6EA /* AI */,
+				B1765B16613E207E3A50C3E1 /* Auth */,
+				014786309B03DEFF337736E4 /* Dashboard */,
+				D849D8D526C0908510A4F172 /* Health */,
+				1411C0604D1967D2683BF4EC /* Settings */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		CA15554C1353BC9DC46385DC /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E0B4818FE1584E8D64DF6A0A /* ActivityDetailView.swift */,
+				5CBEB0427E36739E9DC5B6B5 /* HeartRateView.swift */,
+				F6958094C6632BC0BDE5065A /* RecoveryView.swift */,
+				5E4CD9DDFEED0E345E8BD91F /* SleepDetailView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		CB031CF8EA21DCDC2A3C8DC0 /* iOSHealth */ = {
+			isa = PBXGroup;
+			children = (
+				A66E88AEDBE33AC6399412DC /* iOSHealth.entitlements */,
+				66BF6980AF75847DB29A5DD0 /* App */,
+				4B8E48B59146F41FB84400DB /* Core */,
+				C132943A9FBE647A35F4638F /* Features */,
+				6EE6D878521D137E77B022ED /* Resources */,
+				88025D691EAAC17B1BD2EC9B /* Supporting */,
+			);
+			path = iOSHealth;
+			sourceTree = "<group>";
+		};
+		CB81E193B1669B1EBD893324 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A85AEDE2343F0F143DB1B9A0 /* DashboardView.swift */,
+				D8443D3B30427F0BC77325B3 /* MainTabView.swift */,
+				CC62B8991A80658A99964789 /* MetricCardView.swift */,
+				F61495CC16F01B9E1FAC11E9 /* MetricDetailSheet.swift */,
+				69495F15485CB3C2EF6F2861 /* RecoveryDetailEnhancedView.swift */,
+				4629C34A18BEDB55C2F05949 /* SleepDetailEnhancedView.swift */,
+				36887E7C2DD91485EB2B0037 /* StrainDetailEnhancedView.swift */,
+				058538FCC040AFD4BB510CBE /* TrendChartView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		D77348B3CD5741AFD9EA12FB /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				67BE44700C1DA7FCB1DD83D9 /* SettingsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		D849D8D526C0908510A4F172 /* Health */ = {
+			isa = PBXGroup;
+			children = (
+				29CA25FF06DD539995BFC64D /* ViewModels */,
+				CA15554C1353BC9DC46385DC /* Views */,
+			);
+			path = Health;
+			sourceTree = "<group>";
+		};
+		F35BBCF77270BC6E0AC1AE60 /* iOSHealthTests */ = {
+			isa = PBXGroup;
+			children = (
+				C2C9DB3636A2CB9EBC724330 /* iOSHealthTests.swift */,
+			);
+			path = iOSHealthTests;
+			sourceTree = "<group>";
+		};
+		F6F6BA99237ED373AF5040FB /* Components */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		F7E44AEE4DEC1C2CC18BE9A8 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				2904DBAC882C034AB1A89C47 /* DashboardViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		FC7269B094AC4939CD16CAE5 /* iOSHealthUITests */ = {
+			isa = PBXGroup;
+			children = (
+				D73CBCA9F33DBE8B34EC3C02 /* iOSHealthUITests.swift */,
+			);
+			path = iOSHealthUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9A737F34078264378B75DAD0 /* Vitaly */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1BBC33136077FFA5209AB1F8 /* Build configuration list for PBXNativeTarget "Vitaly" */;
+			buildPhases = (
+				A21E6C835CCADEF7C3A591C4 /* Sources */,
+				6CCCE5D426E0CC521BBC3DD4 /* Resources */,
+				76ADCBA68FFBDC61ED353104 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Vitaly;
+			packageProductDependencies = (
+				CA433C95A4A7DE1FB29E3DD1 /* FirebaseAuth */,
+				99881865D51241A1CBE4337F /* FirebaseFirestore */,
+				1CDEAD6F55B89FB98CC96F7B /* GoogleGenerativeAI */,
+			);
+			productName = Vitaly;
+			productReference = 65D0242B18B850A4AAA65F12 /* Vitaly.app */;
+			productType = "com.apple.product-type.application";
+		};
+		9FB3DCBAE39AE25EEF305FC4 /* VitalyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2F305A086E7D26938D09EBE /* Build configuration list for PBXNativeTarget "VitalyTests" */;
+			buildPhases = (
+				1E3C1B7B95656C02BF756429 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0F6E44875C8CA59A2593E929 /* PBXTargetDependency */,
+			);
+			name = VitalyTests;
+			packageProductDependencies = (
+			);
+			productName = VitalyTests;
+			productReference = D6E9DF925389383798442FCF /* VitalyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C94B34B3B1556B8638BCB186 /* VitalyUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0CBDE4C8060D871CA7A6C146 /* Build configuration list for PBXNativeTarget "VitalyUITests" */;
+			buildPhases = (
+				A7FCAACDD2B4C1EDB37D7363 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8CC5502800692F84E0C8B512 /* PBXTargetDependency */,
+			);
+			name = VitalyUITests;
+			packageProductDependencies = (
+			);
+			productName = VitalyUITests;
+			productReference = EEC303E3CBE5F609AF30A8A2 /* VitalyUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F888FF1C915A62B7FBC9D8D7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					9A737F34078264378B75DAD0 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					9FB3DCBAE39AE25EEF305FC4 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					C94B34B3B1556B8638BCB186 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+						TestTargetID = 9A737F34078264378B75DAD0;
+					};
+				};
+			};
+			buildConfigurationList = 44E6485ED8267DA0EE42CF1E /* Build configuration list for PBXProject "Vitaly" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 6E8612DD4DC875A71358567E;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1C82FAEB33ADA5FED34FB7D5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				4819FF1A49B748496FA1149D /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9A737F34078264378B75DAD0 /* Vitaly */,
+				9FB3DCBAE39AE25EEF305FC4 /* VitalyTests */,
+				C94B34B3B1556B8638BCB186 /* VitalyUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6CCCE5D426E0CC521BBC3DD4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				508FF34998CB850A5A6BEB10 /* Assets.xcassets in Resources */,
+				D3DB1F2CB05B7D2AE64975B3 /* GoogleService-Info.plist in Resources */,
+				201F725D3D71466187DD8932 /* Secrets.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1E3C1B7B95656C02BF756429 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				446BA358AE74B93875C55051 /* iOSHealthTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A21E6C835CCADEF7C3A591C4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C83E04B55A1BF4DDEE29D958 /* AIChatView.swift in Sources */,
+				A0E492D4D4E43C9D8A539D35 /* AIInsight.swift in Sources */,
+				96A661E943DA4E7E47D0156F /* AIInsightsView.swift in Sources */,
+				9EA0BD9E0E0C519761E04F9D /* AIViewModel.swift in Sources */,
+				DA7A58956B1252AABD7C2290 /* APIConfig.swift in Sources */,
+				EF1A0DF848FC413118C28C01 /* ActivityData.swift in Sources */,
+				2E79D9286A1C5A7A3D3A485B /* ActivityDetailView.swift in Sources */,
+				0D26593E8996DE050B146384 /* AppCoordinator.swift in Sources */,
+				C2AFF16B7DDED306D02B1CBA /* AuthNavigationView.swift in Sources */,
+				9DDFBB3DA2143A02AA2433D4 /* AuthService.swift in Sources */,
+				7FB77D81C207E929BDA75584 /* AuthViewModel.swift in Sources */,
+				4CE515EDB9FA84D46991345F /* Color+Extensions.swift in Sources */,
+				E03A05640B16B782B1F7D4FB /* DashboardView.swift in Sources */,
+				959CACFE8D2B5E1E81074FE4 /* DashboardViewModel.swift in Sources */,
+				64092D641CCBEBDD6D828EBC /* Date+Extensions.swift in Sources */,
+				CE036570FB66F14707D02CE0 /* FirestoreService.swift in Sources */,
+				26A7E05E8DB8C91E81F5CC38 /* GeminiService.swift in Sources */,
+				8469E5B8E61D66E653D5638A /* HealthKitService.swift in Sources */,
+				F1FDCADFB4355477C82C30B4 /* HealthMetric.swift in Sources */,
+				18CA6A191E7FA3A39CB9F179 /* HealthViewModel.swift in Sources */,
+				12DEA86904C5FC75F33FB339 /* HeartData.swift in Sources */,
+				3F85B33B71DE361FCAA77BFC /* HeartRateView.swift in Sources */,
+				AFD1132A8EF2F9868C8143ED /* InsightCardView.swift in Sources */,
+				AC0FC2FA15A36FEB286D5B0D /* InsightDetailView.swift in Sources */,
+				3C3471FDAB81A72CED5613F1 /* LoginView.swift in Sources */,
+				FA5E63C3FF21C1C9BC78602F /* MainTabView.swift in Sources */,
+				F96DE050AA66C17C465E0969 /* MetricCardView.swift in Sources */,
+				517F215D3F25356D321945C7 /* MetricDetailSheet.swift in Sources */,
+				164446AE87307171F3A0A9E5 /* OnboardingView.swift in Sources */,
+				683B0948C8CBC7DAD0BADA86 /* RecoveryDetailEnhancedView.swift in Sources */,
+				786CA4B1632D9F8559B141D9 /* RecoveryView.swift in Sources */,
+				69A52F3DF9E3700E33E9074D /* SettingsView.swift in Sources */,
+				730A92FE558B057102E7A91E /* SettingsViewModel.swift in Sources */,
+				BDA56DC732637391FC1FE8FD /* SignUpView.swift in Sources */,
+				4385C5632204BFAB33A1131B /* SleepData.swift in Sources */,
+				8F79F7842CC8646588C80E7B /* SleepDetailEnhancedView.swift in Sources */,
+				A84D5601549CEFA655F5D465 /* SleepDetailView.swift in Sources */,
+				1901D8062F68BF64090401DF /* StrainDetailEnhancedView.swift in Sources */,
+				22895812FEF2957898E018FC /* SyncService.swift in Sources */,
+				0C9B80B3B866A5465E7C8A6A /* TrendChartView.swift in Sources */,
+				1906980FDB39269859D93C3C /* User.swift in Sources */,
+				B5B859EE48DA650BFBFD1303 /* View+Extensions.swift in Sources */,
+				BF442D3FF287BF415E40B770 /* VitalyApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A7FCAACDD2B4C1EDB37D7363 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B719CBEFD1B2C38FC95B6D1 /* iOSHealthUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0F6E44875C8CA59A2593E929 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9A737F34078264378B75DAD0 /* Vitaly */;
+			targetProxy = DAF8F06EF94076C59725609C /* PBXContainerItemProxy */;
+		};
+		8CC5502800692F84E0C8B512 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9A737F34078264378B75DAD0 /* Vitaly */;
+			targetProxy = F8B7F7E8D820C3F8EF675608 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2FBE67DCDE446904A60E3D81 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = iOSHealth/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		4B304FA9E68B39B8A7C1DE91 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = iOSHealth/iOSHealth.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = iOSHealth/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.perfectfools.vitaly;
+				PRODUCT_NAME = Vitaly;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		5B8464168C43C4619BB3C503 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.perfectfools.vitaly.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vitaly.app/Vitaly";
+			};
+			name = Debug;
+		};
+		728EE3800FAA74318DED0FCC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.perfectfools.vitaly.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vitaly.app/Vitaly";
+			};
+			name = Release;
+		};
+		7D10E1E1760EA80B9BD01D50 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.perfectfools.vitaly.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Vitaly;
+			};
+			name = Release;
+		};
+		B8E2DA0FE263286D84A31E81 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = iOSHealth/iOSHealth.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = iOSHealth/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.perfectfools.vitaly;
+				PRODUCT_NAME = Vitaly;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		BD046138267FDE37CB81EB2D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = iOSHealth/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		FDFFA4387F09B081783A0ECE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.perfectfools.vitaly.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Vitaly;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0CBDE4C8060D871CA7A6C146 /* Build configuration list for PBXNativeTarget "VitalyUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FDFFA4387F09B081783A0ECE /* Debug */,
+				7D10E1E1760EA80B9BD01D50 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		1BBC33136077FFA5209AB1F8 /* Build configuration list for PBXNativeTarget "Vitaly" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B8E2DA0FE263286D84A31E81 /* Debug */,
+				4B304FA9E68B39B8A7C1DE91 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		44E6485ED8267DA0EE42CF1E /* Build configuration list for PBXProject "Vitaly" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2FBE67DCDE446904A60E3D81 /* Debug */,
+				BD046138267FDE37CB81EB2D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E2F305A086E7D26938D09EBE /* Build configuration list for PBXNativeTarget "VitalyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5B8464168C43C4619BB3C503 /* Debug */,
+				728EE3800FAA74318DED0FCC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1C82FAEB33ADA5FED34FB7D5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
+		4819FF1A49B748496FA1149D /* XCRemoteSwiftPackageReference "generative-ai-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/generative-ai-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1CDEAD6F55B89FB98CC96F7B /* GoogleGenerativeAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4819FF1A49B748496FA1149D /* XCRemoteSwiftPackageReference "generative-ai-swift" */;
+			productName = GoogleGenerativeAI;
+		};
+		99881865D51241A1CBE4337F /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C82FAEB33ADA5FED34FB7D5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		CA433C95A4A7DE1FB29E3DD1 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C82FAEB33ADA5FED34FB7D5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = F888FF1C915A62B7FBC9D8D7 /* Project object */;
+}

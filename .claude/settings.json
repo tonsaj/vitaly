@@ -1,0 +1,22 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/tonsaj/Workspace/iOSHealth/scripts/swift-check.sh",
+            "timeout": 30,
+            "statusMessage": "Kontrollerar Swift-syntax..."
+          }
+        ]
+      }
+    ]
+  },
+  "env": {
+    "SIMULATOR_ID": "A745E301-55E9-46F7-B77A-5B8A8ECC0C5A",
+    "XCODE_PROJECT": "/Users/tonsaj/Workspace/iOSHealth/Vitaly.xcodeproj",
+    "BUNDLE_ID": "com.perfectfools.vitaly"
+  }
+}

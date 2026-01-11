@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "xcode": {
+      "command": "node",
+      "args": ["/Users/tonsaj/.claude/mcp-servers/xcode-server/index.js"],
+      "env": {
+        "SIMULATOR_ID": "A745E301-55E9-46F7-B77A-5B8A8ECC0C5A"
+      }
+    }
+  }
+}

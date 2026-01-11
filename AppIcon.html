@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vitaly App Icon</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #1a1a1a;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .container {
+            text-align: center;
+        }
+        .icon-wrapper {
+            margin: 20px;
+        }
+        .label {
+            color: #888;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        h1 {
+            color: #fff;
+            margin-bottom: 40px;
+        }
+        .instructions {
+            color: #666;
+            max-width: 500px;
+            margin: 40px auto;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vitaly App Icon</h1>
+
+        <!-- 1024x1024 App Icon -->
+        <div class="icon-wrapper">
+            <svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <!-- Main gradient - warm sunset -->
+                    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#F26B3A"/>
+                        <stop offset="50%" style="stop-color:#F28C5A"/>
+                        <stop offset="100%" style="stop-color:#FFAB7A"/>
+                    </linearGradient>
+
+                    <!-- Dark overlay for depth -->
+                    <linearGradient id="darkOverlay" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#0D0D12;stop-opacity:0.3"/>
+                        <stop offset="100%" style="stop-color:#0D0D12;stop-opacity:0"/>
+                    </linearGradient>
+
+                    <!-- Glow effect -->
+                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="20" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Background with rounded corners (iOS style) -->
+                <rect width="1024" height="1024" rx="224" ry="224" fill="url(#bgGradient)"/>
+
+                <!-- Subtle dark overlay -->
+                <rect width="1024" height="1024" rx="224" ry="224" fill="url(#darkOverlay)"/>
+
+                <!-- Organic wave shape -->
+                <path d="M0,600 Q200,500 400,550 T800,480 T1024,520 L1024,1024 L0,1024 Z"
+                      fill="#0D0D12" opacity="0.15"/>
+                <path d="M0,700 Q250,600 500,650 T1024,600 L1024,1024 L0,1024 Z"
+                      fill="#0D0D12" opacity="0.1"/>
+
+                <!-- Sunburst icon group -->
+                <g transform="translate(512, 460)" filter="url(#glow)">
+                    <!-- Outer rays (longer) -->
+                    <g fill="#FFFFFF">
+                        <!-- 12 rays at 30 degree intervals -->
+                        <rect x="-8" y="-200" width="16" height="50" rx="8" transform="rotate(0)"/>
+                        <rect x="-8" y="-200" width="16" height="50" rx="8" transform="rotate(30)"/>
+                        <rect x="-8" y="-200" width="16" height="50" rx="8" transform="rotate(60)"/>
+                        <rect x="-8" y="-200" width="16" height="50" rx="8" transform="rotate(90)"/>
+                        <rect x="-8" y="-200" width="16" height="50" rx="8" transform="rotate(120)"/>
+                        <rect x="-8" y="-200" width="16" height="50" rx="8" transform="rotate(150)"/>
+                        <rect x="-8" y="-200" width="16" height="50" rx="8" transform="rotate(180)"/>
+                        <rect x="-8" y="-200" width="16" height="50" rx="8" transform="rotate(210)"/>
+                        <rect x="-8" y="-200" width="16" height="50" rx="8" transform="rotate(240)"/>
+                        <rect x="-8" y="-200" width="16" height="50" rx="8" transform="rotate(270)"/>
+                        <rect x="-8" y="-200" width="16" height="50" rx="8" transform="rotate(300)"/>
+                        <rect x="-8" y="-200" width="16" height="50" rx="8" transform="rotate(330)"/>
+                    </g>
+
+                    <!-- Middle rays (shorter) -->
+                    <g fill="#FFFFFF" opacity="0.9">
+                        <rect x="-6" y="-160" width="12" height="35" rx="6" transform="rotate(15)"/>
+                        <rect x="-6" y="-160" width="12" height="35" rx="6" transform="rotate(45)"/>
+                        <rect x="-6" y="-160" width="12" height="35" rx="6" transform="rotate(75)"/>
+                        <rect x="-6" y="-160" width="12" height="35" rx="6" transform="rotate(105)"/>
+                        <rect x="-6" y="-160" width="12" height="35" rx="6" transform="rotate(135)"/>
+                        <rect x="-6" y="-160" width="12" height="35" rx="6" transform="rotate(165)"/>
+                        <rect x="-6" y="-160" width="12" height="35" rx="6" transform="rotate(195)"/>
+                        <rect x="-6" y="-160" width="12" height="35" rx="6" transform="rotate(225)"/>
+                        <rect x="-6" y="-160" width="12" height="35" rx="6" transform="rotate(255)"/>
+                        <rect x="-6" y="-160" width="12" height="35" rx="6" transform="rotate(285)"/>
+                        <rect x="-6" y="-160" width="12" height="35" rx="6" transform="rotate(315)"/>
+                        <rect x="-6" y="-160" width="12" height="35" rx="6" transform="rotate(345)"/>
+                    </g>
+
+                    <!-- Inner dots ring -->
+                    <g fill="#FFFFFF" opacity="0.85">
+                        <circle cx="0" cy="-100" r="12" transform="rotate(0)"/>
+                        <circle cx="0" cy="-100" r="12" transform="rotate(45)"/>
+                        <circle cx="0" cy="-100" r="12" transform="rotate(90)"/>
+                        <circle cx="0" cy="-100" r="12" transform="rotate(135)"/>
+                        <circle cx="0" cy="-100" r="12" transform="rotate(180)"/>
+                        <circle cx="0" cy="-100" r="12" transform="rotate(225)"/>
+                        <circle cx="0" cy="-100" r="12" transform="rotate(270)"/>
+                        <circle cx="0" cy="-100" r="12" transform="rotate(315)"/>
+                    </g>
+
+                    <!-- Center circle -->
+                    <circle cx="0" cy="0" r="40" fill="#FFFFFF"/>
+                </g>
+
+                <!-- App name -->
+                <text x="512" y="750"
+                      font-family="-apple-system, SF Pro Rounded, Helvetica Neue, sans-serif"
+                      font-size="120"
+                      font-weight="700"
+                      fill="#FFFFFF"
+                      text-anchor="middle"
+                      opacity="0.95">Vitaly</text>
+            </svg>
+            <div class="label">1024x1024 (App Store)</div>
+        </div>
+
+        <div class="instructions">
+            <p><strong>Hur du exporterar ikonen:</strong></p>
+            <ol>
+                <li>Öppna denna fil i Safari/Chrome</li>
+                <li>Högerklicka på ikonen → "Spara bild som..." (PNG)</li>
+                <li>Eller ta en skärmdump av 1024x1024 versionen</li>
+                <li>Lägg PNG-filen i Assets.xcassets/AppIcon.appiconset/</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
