@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - Vitaly</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #F27340;
+            --secondary: #FA9973;
+            --background: #0D0D12;
+            --card: #1A1A1F;
+            --text-primary: #F2F2F2;
+            --text-secondary: #99948C;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .header {
+            padding: 24px;
+            border-bottom: 1px solid var(--card);
+        }
+
+        .header a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .intro {
+            color: var(--text-secondary);
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        .faq-item {
+            background: var(--card);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+
+        .faq-item h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .faq-item p {
+            margin-bottom: 0;
+        }
+
+        .contact-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .contact-card h2 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .contact-card p {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .contact-card a {
+            display: inline-block;
+            background: white;
+            color: var(--primary);
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 16px;
+            transition: transform 0.2s;
+        }
+
+        .contact-card a:hover {
+            transform: scale(1.05);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            border-top: 1px solid var(--card);
+            margin-top: 60px;
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html">← Back to Vitaly</a>
+    </div>
+
+    <div class="container">
+        <h1>Support</h1>
+        <p class="intro">We're here to help you get the most out of Vitaly. Find answers to common questions below or contact us directly.</p>
+
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+            <h3>How do I connect Vitaly to Apple Health?</h3>
+            <p>When you first open Vitaly, you'll be asked to grant permission to access your health data. You can also enable this later in iOS Settings → Privacy & Security → Health → Vitaly.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>Why isn't my sleep data showing?</h3>
+            <p>Sleep data requires an Apple Watch or a compatible sleep tracking app that writes to Apple Health. Make sure your device is recording sleep and syncing to Apple Health.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>How is my Recovery Score calculated?</h3>
+            <p>Your Recovery Score is based on several factors including sleep quality, heart rate variability (HRV), resting heart rate, and sleep duration. A higher score means your body is well-recovered.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>Is my health data secure?</h3>
+            <p>Yes! All data is encrypted in transit and at rest. We use Firebase's enterprise-grade security. We never sell your data or share it with advertisers. Read our <a href="privacy.html" style="color: var(--primary);">Privacy Policy</a> for more details.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>How do I delete my account?</h3>
+            <p>Go to Settings in the Vitaly app and tap "Delete Account". This will permanently remove all your data from our servers within 30 days.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>What is the GLP-1 Tracker?</h3>
+            <p>The GLP-1 Tracker is a beta feature for people taking weight loss medications like Ozempic, Wegovy, or Mounjaro. It helps you track injections, monitor side effects, and visualize your progress.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>How do I enable injection reminders?</h3>
+            <p>In the GLP-1 Tracker, tap "Edit Treatment" and enable "Injection Reminder". You can set your preferred day and time for notifications.</p>
+        </div>
+
+        <div class="contact-card">
+            <h2>Still need help?</h2>
+            <p>Our support team is happy to assist you with any questions.</p>
+            <a href="mailto:support@vitaly.app">Contact Support</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Perfect Fools AB. All rights reserved.</p>
+        <p style="margin-top: 8px;"><a href="index.html">Vitaly</a> · <a href="privacy.html">Privacy Policy</a></p>
+    </footer>
+</body>
+</html>

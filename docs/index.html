@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitaly - Your Health, Simplified</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #F27340;
+            --secondary: #FA9973;
+            --background: #0D0D12;
+            --card: #1A1A1F;
+            --text-primary: #F2F2F2;
+            --text-secondary: #99948C;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(180deg, var(--card) 0%, var(--background) 100%);
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .app-store-badge {
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .app-store-badge img {
+            height: 54px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            padding: 60px 20px;
+        }
+
+        .feature {
+            background: var(--card);
+            padding: 32px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        .feature h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .feature p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .links {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid var(--card);
+        }
+
+        .links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin: 0 16px;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .links a:hover {
+            color: var(--primary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="logo">☀️</div>
+        <h1>Vitaly</h1>
+        <p class="tagline">Your Health, Simplified</p>
+        <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto;">
+            Transform your Apple Health data into actionable insights. Track recovery, sleep, and heart health with AI-powered recommendations.
+        </p>
+        <a href="https://apps.apple.com/app/vitaly/id6757679659" class="app-store-badge">
+            <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store">
+        </a>
+    </div>
+
+    <div class="features">
+        <div class="feature">
+            <div class="feature-icon">💤</div>
+            <h3>Sleep Analysis</h3>
+            <p>Deep dive into your sleep stages and quality with detailed breakdowns</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">❤️</div>
+            <h3>Heart Health</h3>
+            <p>Track HRV, resting heart rate, and trends over time</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <h3>Recovery Score</h3>
+            <p>Know when to push hard and when to rest</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">🤖</div>
+            <h3>AI Insights</h3>
+            <p>Personalized recommendations based on your unique data</p>
+        </div>
+    </div>
+
+    <div class="links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="support.html">Support</a>
+        <a href="mailto:support@vitaly.app">Contact</a>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Perfect Fools AB. All rights reserved.</p>
+        <p style="margin-top: 8px;">Made with ❤️ in Stockholm</p>
+    </footer>
+</body>
+</html>
