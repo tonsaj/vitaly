@@ -95,8 +95,11 @@
         }
 
         .feature-icon {
-            font-size: 40px;
             margin-bottom: 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .feature h3 {
@@ -151,22 +154,77 @@
 
     <div class="features">
         <div class="feature">
-            <div class="feature-icon">💤</div>
+            <div class="feature-icon">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="sleepGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#9980D9"/>
+                            <stop offset="100%" style="stop-color:#7B61C4"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M24 4C12.95 4 4 12.95 4 24C4 35.05 12.95 44 24 44C35.05 44 44 35.05 44 24C44 23.45 43.97 22.91 43.92 22.38C42.35 25.73 38.94 28 35 28C29.48 28 25 23.52 25 18C25 13.06 28.27 8.87 32.73 7.55C30.11 5.35 26.71 4 24 4Z" fill="url(#sleepGrad)"/>
+                    <circle cx="36" cy="10" r="2" fill="#FFC7A6"/>
+                    <circle cx="40" cy="16" r="1.5" fill="#FFC7A6" opacity="0.7"/>
+                    <circle cx="42" cy="8" r="1" fill="#FFC7A6" opacity="0.5"/>
+                </svg>
+            </div>
             <h3>Sleep Analysis</h3>
             <p>Deep dive into your sleep stages and quality with detailed breakdowns</p>
         </div>
         <div class="feature">
-            <div class="feature-icon">❤️</div>
+            <div class="feature-icon">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#F25966"/>
+                            <stop offset="100%" style="stop-color:#E84555"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M24 42L21.03 39.27C10.8 30 4 23.84 4 16.25C4 10.09 8.84 5.25 15 5.25C18.48 5.25 21.82 6.87 24 9.45C26.18 6.87 29.52 5.25 33 5.25C39.16 5.25 44 10.09 44 16.25C44 23.84 37.2 30 26.97 39.27L24 42Z" fill="url(#heartGrad)"/>
+                    <path d="M12 22H18L21 16L25 28L29 20L32 22H38" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
             <h3>Heart Health</h3>
             <p>Track HRV, resting heart rate, and trends over time</p>
         </div>
         <div class="feature">
-            <div class="feature-icon">⚡</div>
+            <div class="feature-icon">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="recoveryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FFB359"/>
+                            <stop offset="100%" style="stop-color:#F27340"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="8" y="6" width="32" height="36" rx="6" fill="url(#recoveryGrad)"/>
+                    <rect x="18" y="2" width="12" height="6" rx="2" fill="url(#recoveryGrad)"/>
+                    <rect x="14" y="16" width="20" height="20" rx="3" fill="#0D0D12" opacity="0.3"/>
+                    <path d="M24 18V30M24 30L30 24M24 30L18 24" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
             <h3>Recovery Score</h3>
             <p>Know when to push hard and when to rest</p>
         </div>
         <div class="feature">
-            <div class="feature-icon">🤖</div>
+            <div class="feature-icon">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="aiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#F27340"/>
+                            <stop offset="100%" style="stop-color:#FA9973"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="24" cy="26" r="16" fill="url(#aiGrad)"/>
+                    <circle cx="18" cy="24" r="3" fill="white"/>
+                    <circle cx="30" cy="24" r="3" fill="white"/>
+                    <circle cx="18" cy="24" r="1.5" fill="#0D0D12"/>
+                    <circle cx="30" cy="24" r="1.5" fill="#0D0D12"/>
+                    <path d="M19 32C19 32 21.5 35 24 35C26.5 35 29 32 29 32" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M14 10L16 14L20 12" stroke="#FFC7A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M34 10L32 14L28 12" stroke="#FFC7A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="24" cy="6" r="2" fill="#FFC7A6"/>
+                </svg>
+            </div>
             <h3>AI Insights</h3>
             <p>Personalized recommendations based on your unique data</p>
         </div>
