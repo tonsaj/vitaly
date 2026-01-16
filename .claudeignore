@@ -1,0 +1,70 @@
+# Build artifacts
+build/
+DerivedData/
+*.ipa
+*.dSYM.zip
+*.app
+
+# Xcode
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+
+# Swift Package Manager (3rd party dependencies)
+.build/
+.swiftpm/
+**/Package.resolved
+SourcePackages/
+
+# CocoaPods (if used)
+Pods/
+Podfile.lock
+
+# Carthage (if used)
+Carthage/
+
+# Certificates and secrets
+*.cer
+*.p8
+*.p12
+*.mobileprovision
+*.pem
+Secrets.plist
+fastlane/.env*
+
+# Generated files
+*.generated.swift
+*_vers.c
+
+# Documentation (not code)
+*.md
+!CLAUDE.md
+docs/
+
+# Test output
+*.xcresult
+coverage/
+fastlane/test_output/
+
+# Screenshots and images (binary)
+screenshots/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.pdf
+
+# Misc
+.DS_Store
+*.log
+*.tmp
+*.temp
+*.backup
+
+# Old/backup files
+*.swift.backup
+
+# Icon generation scripts
+GenerateAppIcon*.swift
+AppIcon.html
