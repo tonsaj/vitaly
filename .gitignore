@@ -67,3 +67,6 @@ playground.xcworkspace
 # Temporary files
 *.tmp
 *.temp
+
+# Fastlane secrets
+fastlane/.env

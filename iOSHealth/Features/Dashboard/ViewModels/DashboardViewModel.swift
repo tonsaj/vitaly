@@ -1,20 +1,35 @@
 import Foundation
 import SwiftUI
+import os.log
 
 @Observable
 final class DashboardViewModel {
+    private let logger = Logger(subsystem: "com.perfectfools.vitaly", category: "Dashboard")
     // MARK: - Published State
     var sleepData: SleepData?
     var activityData: ActivityData?
     var heartData: HeartData?
 
+    // Historisk data
+    var yesterdayData: DailyHealthData?
+    var weeklyData: WeeklyHealthData?
+
+    // AI Sammanfattning
+    var aiSummary: String?
+    var isLoadingAI = false
+
     var isLoading = false
     var error: Error?
     var lastRefreshDate: Date?
-    var isDemoMode = false
+
+    // MARK: - Date Navigation
+    var selectedDate: Date = Date()
 
     // MARK: - Dependencies
     private let healthKitService: HealthKitService
+    private let geminiService: GeminiService
+    private var userGoals: HealthGoals = .defaultGoals
+    private var userProfile: UserHealthProfile?
 
     // MARK: - Computed Properties
     var hasData: Bool {
@@ -24,8 +39,39 @@ final class DashboardViewModel {
     var todayDate: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEEE, d MMMM"
-        formatter.locale = Locale(identifier: "sv_SE")
-        return formatter.string(from: Date())
+        formatter.locale = Locale(identifier: "en_US")
+        return formatter.string(from: selectedDate)
+    }
+
+    var isToday: Bool {
+        Calendar.current.isDateInToday(selectedDate)
+    }
+
+    var isYesterday: Bool {
+        Calendar.current.isDateInYesterday(selectedDate)
+    }
+
+    var canGoForward: Bool {
+        !isToday
+    }
+
+    var canGoBack: Bool {
+        // Allow going back up to 30 days
+        let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
+        return selectedDate > thirtyDaysAgo
+    }
+
+    var dateDisplayText: String {
+        if isToday {
+            return "Today"
+        } else if isYesterday {
+            return "Yesterday"
+        } else {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "d MMM"
+            formatter.locale = Locale(identifier: "en_US")
+            return formatter.string(from: selectedDate)
+        }
     }
 
     var overallScore: Int {
@@ -43,7 +89,6 @@ final class DashboardViewModel {
         }
 
         if let heart = heartData {
-            // Convert HRV status to score
             let hrvScore: Int = {
                 switch heart.hrvStatus {
                 case .excellent: return 90
@@ -62,48 +107,172 @@ final class DashboardViewModel {
 
     var overallScoreText: String {
         switch overallScore {
-        case 85...100: return "Utmärkt"
-        case 70..<85: return "Mycket bra"
-        case 55..<70: return "Bra"
-        case 40..<55: return "Okej"
-        default: return "Behöver förbättras"
+        case 85...100: return "Excellent"
+        case 70..<85: return "Very good"
+        case 55..<70: return "Good"
+        case 40..<55: return "Okay"
+        default: return "Needs improvement"
         }
     }
 
-    // MARK: - Weekly Trend Data
+    // MARK: - Weekly Trend Data (från riktig HealthKit-data)
     var weeklyTrendData: [DayTrendData] {
-        // Demo data för 7 dagar
-        let days = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"]
-        let scores = [72.0, 68.0, 78.0, 82.0, 75.0, 85.0, Double(overallScore)]
-        return zip(days, scores).map { DayTrendData(dayName: $0, score: $1) }
+        guard let weekly = weeklyData else {
+            // Fallback to demo
+            let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+            let scores = [72.0, 68.0, 78.0, 82.0, 75.0, 85.0, Double(overallScore)]
+            return zip(days, scores).map { DayTrendData(dayName: $0, score: $1) }
+        }
+
+        // Beräkna poäng för varje dag baserat på riktig data
+        let calendar = Calendar.current
+        let today = Date()
+
+        return (0..<7).reversed().map { dayOffset in
+            let date = calendar.date(byAdding: .day, value: -dayOffset, to: today)!
+            let formatter = DateFormatter()
+            formatter.dateFormat = "EEE"
+            formatter.locale = Locale(identifier: "en_US")
+            let dayName = formatter.string(from: date)
+
+            let index = 6 - dayOffset
+            guard index < weekly.activityData.count else {
+                return DayTrendData(dayName: dayName, score: 0)
+            }
+
+            // Beräkna dagligt score
+            var score = 0.0
+            var count = 0
+
+            if let sleep = weekly.sleepData[safe: index] {
+                score += Double(sleep?.quality.score ?? 50)
+                count += 1
+            }
+
+            let activity = weekly.activityData[index]
+            score += Double(activity.activityScore)
+            count += 1
+
+            if let hrv = weekly.heartData[safe: index]?.hrv {
+                let hrvScore = hrv >= 50 ? 85.0 : hrv >= 35 ? 65.0 : 45.0
+                score += hrvScore
+                count += 1
+            }
+
+            return DayTrendData(dayName: dayName, score: count > 0 ? score / Double(count) : 50)
+        }
     }
 
     var averageSleepHours: Double {
-        // Demo-värde, ska beräknas från historisk data
-        guard let sleep = sleepData else { return 7.2 }
+        if let weekly = weeklyData {
+            return weekly.averageSleepHours
+        }
+        guard let sleep = sleepData else { return 0 }
         return sleep.totalHours
     }
 
     var averageSteps: Int {
-        // Demo-värde
-        guard let activity = activityData else { return 8500 }
+        if let weekly = weeklyData {
+            return weekly.averageSteps
+        }
+        guard let activity = activityData else { return 0 }
         return activity.steps
     }
 
     var averageHRV: Double {
-        // Demo-värde
-        guard let heart = heartData, let hrv = heart.hrv else { return 52 }
+        if let weekly = weeklyData {
+            return weekly.averageHRV
+        }
+        guard let heart = heartData, let hrv = heart.hrv else { return 0 }
         return hrv
     }
 
+    // MARK: - Jämförelse med igår
+    var yesterdaySleepHours: Double {
+        yesterdayData?.sleep?.totalHours ?? 0
+    }
+
+    var yesterdaySteps: Int {
+        yesterdayData?.activity.steps ?? 0
+    }
+
+    var yesterdayHRV: Double {
+        yesterdayData?.heart.hrv ?? 0
+    }
+
+    var sleepChange: Double {
+        guard let today = sleepData?.totalHours else { return 0 }
+        return today - yesterdaySleepHours
+    }
+
+    var stepsChange: Int {
+        guard let today = activityData?.steps else { return 0 }
+        return today - yesterdaySteps
+    }
+
+    var hrvChange: Double {
+        guard let today = heartData?.hrv else { return 0 }
+        return today - yesterdayHRV
+    }
+
     // MARK: - Init
-    init(healthKitService: HealthKitService = HealthKitService()) {
+    init(healthKitService: HealthKitService = HealthKitService(), geminiService: GeminiService = GeminiService()) {
         self.healthKitService = healthKitService
+        self.geminiService = geminiService
+    }
+
+    // MARK: - Update User Settings
+    func updateGoals(_ goals: HealthGoals) {
+        self.userGoals = goals
+    }
+
+    func updateUserProfile(name: String? = nil, age: Int?, heightCm: Double?, weightKg: Double?, bodyFatPercentage: Double? = nil, vo2Max: Double? = nil) {
+        self.userProfile = UserHealthProfile(
+            name: name,
+            age: age,
+            heightCm: heightCm,
+            weightKg: weightKg,
+            bodyFatPercentage: bodyFatPercentage,
+            vo2Max: vo2Max,
+            leanBodyMass: nil
+        )
+    }
+
+    // MARK: - Date Navigation
+    @MainActor
+    func goToPreviousDay() {
+        guard canGoBack else { return }
+        selectedDate = Calendar.current.date(byAdding: .day, value: -1, to: selectedDate) ?? selectedDate
+        Task {
+            await loadDataForSelectedDate()
+        }
+    }
+
+    @MainActor
+    func goToNextDay() {
+        guard canGoForward else { return }
+        selectedDate = Calendar.current.date(byAdding: .day, value: 1, to: selectedDate) ?? selectedDate
+        Task {
+            await loadDataForSelectedDate()
+        }
+    }
+
+    @MainActor
+    func goToToday() {
+        selectedDate = Date()
+        Task {
+            await loadDataForSelectedDate()
+        }
     }
 
     // MARK: - Data Loading
     @MainActor
     func loadTodayData() async {
+        await loadDataForSelectedDate()
+    }
+
+    @MainActor
+    func loadDataForSelectedDate() async {
         guard !isLoading else { return }
 
         isLoading = true
@@ -116,86 +285,95 @@ final class DashboardViewModel {
                 try await healthKitService.requestAuthorization()
             }
 
-            let today = Date()
+            // Hämta data för valt datum
+            async let sleep = healthKitService.fetchSleepData(for: selectedDate)
+            async let activity = healthKitService.fetchActivityData(for: selectedDate)
+            async let heart = healthKitService.fetchHeartData(for: selectedDate)
 
-            // Fetch all data in parallel
-            async let sleep = healthKitService.fetchSleepData(for: today)
-            async let activity = healthKitService.fetchActivityData(for: today)
-            async let heart = healthKitService.fetchHeartData(for: today)
+            // Hämta historisk data
+            async let yesterday = healthKitService.fetchYesterdayData()
+            async let weekly = healthKitService.fetchWeeklyData()
 
             self.sleepData = try await sleep
             self.activityData = try await activity
             self.heartData = try await heart
+            self.yesterdayData = try await yesterday
+            self.weeklyData = try await weekly
 
             lastRefreshDate = Date()
+
+            // Ladda AI-sammanfattning i bakgrunden
+            await loadAISummary()
         } catch {
-            self.error = error
+            // Ignorera "no data" fel - visa bara "--" i UI
+            if !error.localizedDescription.contains("No data") {
+                logger.error("❌ Dashboard fel: \(error.localizedDescription)")
+                self.error = error
+            }
         }
 
         isLoading = false
     }
 
     @MainActor
+    func loadAISummary() async {
+        guard hasData else { return }
+        guard !isLoadingAI else { return }
+
+        isLoadingAI = true
+
+        do {
+            // Create today's data object - use actual data, don't fill with zeros
+            let todayData = DailyHealthData(
+                date: selectedDate,
+                sleep: sleepData,  // Keep as is - can be nil
+                activity: activityData ?? ActivityData(
+                    id: UUID().uuidString,
+                    date: selectedDate,
+                    steps: 0,
+                    activeCalories: 0,
+                    totalCalories: 0,
+                    distance: 0,
+                    exerciseMinutes: 0,
+                    standHours: 0,
+                    workouts: []
+                ),
+                heart: heartData ?? HeartData(
+                    id: UUID().uuidString,
+                    date: selectedDate,
+                    restingHeartRate: 0,
+                    averageHeartRate: 0,
+                    maxHeartRate: 0,
+                    minHeartRate: 0,
+                    hrv: nil,
+                    heartRateZones: []
+                )
+            )
+
+            aiSummary = try await geminiService.generateDailyOverview(
+                today: todayData,
+                yesterday: yesterdayData,
+                goals: userGoals,
+                userProfile: userProfile,
+                selectedDate: selectedDate
+            )
+        } catch {
+            logger.error("AI summary error: \(error.localizedDescription)")
+            aiSummary = nil
+        }
+
+        isLoadingAI = false
+    }
+
+    @MainActor
     func refresh() async {
         await loadTodayData()
     }
+}
 
-    // MARK: - Demo Mode
-    @MainActor
-    func loadDemoData() {
-        isDemoMode = true
-        error = nil
-
-        let now = Date()
-        let calendar = Calendar.current
-
-        // Demo sleep data - 7h 32m of sleep
-        sleepData = SleepData(
-            id: UUID().uuidString,
-            date: now,
-            totalDuration: 27120, // 7h 32m
-            deepSleep: 5400,      // 1h 30m
-            remSleep: 7200,       // 2h
-            lightSleep: 14520,    // 4h 2m
-            awake: 1800,          // 30m
-            bedtime: calendar.date(byAdding: .hour, value: -8, to: calendar.startOfDay(for: now)),
-            wakeTime: calendar.date(byAdding: .minute, value: 32, to: calendar.startOfDay(for: now))
-        )
-
-        // Demo activity data
-        activityData = ActivityData(
-            id: UUID().uuidString,
-            date: now,
-            steps: 8547,
-            activeCalories: 423,
-            totalCalories: 2180,
-            distance: 6234,
-            exerciseMinutes: 42,
-            standHours: 10,
-            workouts: [
-                WorkoutSummary(
-                    id: UUID().uuidString,
-                    workoutType: "Löpning",
-                    duration: 1860, // 31 min
-                    calories: 312,
-                    startTime: calendar.date(byAdding: .hour, value: -3, to: now)!,
-                    averageHeartRate: 145
-                )
-            ]
-        )
-
-        // Demo heart data
-        heartData = HeartData(
-            id: UUID().uuidString,
-            date: now,
-            restingHeartRate: 58,
-            averageHeartRate: 72,
-            maxHeartRate: 156,
-            minHeartRate: 52,
-            hrv: 48,
-            heartRateZones: []
-        )
-
-        lastRefreshDate = now
+// MARK: - Safe Array Access
+extension Collection {
+    subscript(safe index: Index) -> Element? {
+        indices.contains(index) ? self[index] : nil
     }
 }

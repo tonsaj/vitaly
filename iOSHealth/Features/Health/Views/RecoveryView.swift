@@ -25,8 +25,11 @@ struct RecoveryView: View {
             }
             .padding()
         }
+        .scrollBounceBehavior(.basedOnSize)
+        .clipped()
+        .contentShape(Rectangle())
         .background(Color.vitalyBackground)
-        .navigationTitle("Återhämtning")
+        .navigationTitle("Recovery")
         .navigationBarTitleDisplayMode(.large)
     }
 
@@ -62,7 +65,7 @@ struct RecoveryView: View {
                         .font(.system(size: 64, weight: .bold, design: .rounded))
                         .foregroundColor(.vitalyTextPrimary)
 
-                    Text("Återhämtning")
+                    Text("Recovery")
                         .font(.caption)
                         .foregroundColor(.vitalyTextSecondary)
                 }
@@ -484,7 +487,7 @@ struct RecoveryView: View {
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 5]))
                     .foregroundStyle(Color.vitalyExcellent.opacity(0.3))
 
-                RuleMark(y: .value("Bra", 65))
+                RuleMark(y: .value("Good", 65))
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 5]))
                     .foregroundStyle(Color.vitalyFair.opacity(0.3))
             }

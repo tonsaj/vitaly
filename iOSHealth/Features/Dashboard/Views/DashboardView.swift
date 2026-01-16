@@ -2,8 +2,10 @@ import SwiftUI
 import Charts
 
 struct DashboardView: View {
+    @EnvironmentObject private var coordinator: AppCoordinator
     @State private var viewModel = DashboardViewModel()
     @State private var selectedMetric: DashboardMetric?
+    private let healthRef = HealthReferenceService.shared
 
     var body: some View {
         NavigationStack {
@@ -19,9 +21,48 @@ struct DashboardView: View {
                 )
                 .ignoresSafeArea()
 
-                ScrollView(showsIndicators: false) {
+                ScrollView(.vertical, showsIndicators: false) {
+                    // Prevent horizontal scroll
                     VStack(spacing: 0) {
-                        headerSection
+                        // Wavy animated header with swipe gesture and arrows for date navigation
+                        WavyHeaderView(
+                            title: viewModel.dateDisplayText,
+                            subtitle: viewModel.todayDate,
+                            canGoBack: viewModel.canGoBack,
+                            canGoForward: viewModel.canGoForward,
+                            onSwipeLeft: {
+                                if viewModel.canGoForward {
+                                    viewModel.goToNextDay()
+                                }
+                            },
+                            onSwipeRight: {
+                                if viewModel.canGoBack {
+                                    viewModel.goToPreviousDay()
+                                }
+                            }
+                        )
+
+                        // "Back to today" button if not today
+                        if !viewModel.isToday {
+                            Button {
+                                viewModel.goToToday()
+                            } label: {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "arrow.counterclockwise")
+                                        .font(.caption.weight(.semibold))
+                                    Text("Back to today")
+                                        .font(.caption.weight(.semibold))
+                                }
+                                .foregroundStyle(Color.vitalyPrimary)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(
+                                    Capsule()
+                                        .fill(Color.vitalyPrimary.opacity(0.15))
+                                )
+                            }
+                            .padding(.top, 8)
+                        }
 
                         if viewModel.isLoading {
                             loadingView
@@ -29,16 +70,16 @@ struct DashboardView: View {
                             errorView(error)
                         } else if viewModel.hasData {
                             VStack(spacing: 20) {
-                                // Dagens sammanfattning med jämförelse
+                                // Today's summary with comparison
                                 dailySummaryCard
 
-                                // Hälsometriker (6 kort med navigation)
+                                // Health metrics (6 cards with navigation)
                                 healthMetricsSection
 
-                                // 7-dagars trend
+                                // 7-day trend
                                 weeklyTrendSection
 
-                                // Aktivitetstidslinje
+                                // Activity timeline
                                 activityTimelineSection
                             }
                             .padding(.horizontal, 16)
@@ -48,19 +89,29 @@ struct DashboardView: View {
                             emptyStateView
                         }
                     }
+                    .frame(maxWidth: .infinity)
                 }
+                .scrollBounceBehavior(.basedOnSize)
+                .scrollContentBackground(.hidden)
+                .clipped()
+                .contentShape(Rectangle())
                 .refreshable {
                     await viewModel.refresh()
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    SunburstIcon(rayCount: 8, color: .vitalyPrimary)
-                        .frame(width: 28, height: 28)
-                }
-            }
             .task {
+                // Update user profile with name for personalized AI
+                if let user = coordinator.authService.currentUser {
+                    viewModel.updateUserProfile(
+                        name: user.displayName,
+                        age: user.age,
+                        heightCm: user.heightCm,
+                        weightKg: nil,
+                        bodyFatPercentage: nil,
+                        vo2Max: nil
+                    )
+                }
                 await viewModel.loadTodayData()
             }
             .sheet(item: $selectedMetric) { metric in
@@ -68,61 +119,34 @@ struct DashboardView: View {
                     metric: metric,
                     currentValue: currentValue(for: metric),
                     yesterdayValue: yesterdayValue(for: metric),
-                    weekData: weekData(for: metric)
+                    weekData: weekData(for: metric),
+                    sleepData: metric == .sleep ? viewModel.sleepData : nil,
+                    yesterdaySleepData: metric == .sleep ? viewModel.yesterdayData?.sleep : nil,
+                    weeklySleepData: metric == .sleep ? (viewModel.weeklyData?.sleepData ?? []) : []
                 )
             }
         }
     }
 
-    // MARK: - Header
-    private var headerSection: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(viewModel.todayDate)
-                    .font(.system(size: 22, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color.vitalyTextPrimary)
 
-                if viewModel.isDemoMode {
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(Color.vitalyPrimary)
-                            .frame(width: 6, height: 6)
-                        Text("DEMO-LÄGE")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(Color.vitalyPrimary)
-                    }
-                }
-            }
-
-            Spacer()
-
-            Circle()
-                .fill(LinearGradient.vitalyGradient)
-                .frame(width: 40, height: 40)
-                .overlay(
-                    Text("V")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(.white)
-                )
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 16)
-        .padding(.bottom, 8)
-    }
-
-    // MARK: - Dagens Sammanfattning
+    // MARK: - Today's Summary
     private var dailySummaryCard: some View {
         VitalyCard {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    Text("DAGENS LÄGE")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(Color.vitalyTextSecondary)
-                        .tracking(1.2)
+                    HStack(spacing: 6) {
+                        Image(systemName: "sparkles")
+                            .font(.caption)
+                            .foregroundStyle(Color.vitalyPrimary)
+                        Text("TODAY'S STATUS")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color.vitalyTextSecondary)
+                            .tracking(1.2)
+                    }
 
                     Spacer()
 
-                    // Status indikator
+                    // Status indicator
                     HStack(spacing: 6) {
                         Circle()
                             .fill(statusColor)
@@ -133,25 +157,43 @@ struct DashboardView: View {
                     }
                 }
 
-                Text(summaryMessage)
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(Color.vitalyTextPrimary)
-                    .lineSpacing(4)
+                // AI summary or fallback
+                if viewModel.isLoadingAI {
+                    HStack(spacing: 10) {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .vitalyPrimary))
+                            .scaleEffect(0.8)
+                        Text("Analyzing your health data...")
+                            .font(.system(size: 14))
+                            .foregroundStyle(Color.vitalyTextSecondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                } else if let aiSummary = viewModel.aiSummary {
+                    Text(aiSummary)
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(Color.vitalyTextPrimary)
+                        .lineSpacing(4)
+                } else {
+                    Text(summaryMessage)
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(Color.vitalyTextPrimary)
+                        .lineSpacing(4)
+                }
 
-                // Jämförelse med igår
+                // Comparison with yesterday
                 Divider()
                     .background(Color.vitalySurface)
 
                 HStack(spacing: 20) {
                     ComparisonItem(
-                        label: "Sömn",
+                        label: "Sleep",
                         todayValue: viewModel.sleepData?.formattedDuration ?? "-",
                         change: sleepChange,
                         icon: "bed.double.fill"
                     )
 
                     ComparisonItem(
-                        label: "Steg",
+                        label: "Steps",
                         todayValue: "\(viewModel.activityData?.steps ?? 0)",
                         change: stepsChange,
                         icon: "figure.walk"
@@ -169,10 +211,10 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - Hälsometriker (6 kort)
+    // MARK: - Health Metrics (6 cards)
     private var healthMetricsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Hälsometriker")
+            Text("Health Metrics")
                 .font(.system(size: 18, weight: .bold))
                 .foregroundStyle(Color.vitalyTextPrimary)
 
@@ -180,50 +222,49 @@ struct DashboardView: View {
                 GridItem(.flexible(), spacing: 12),
                 GridItem(.flexible(), spacing: 12)
             ], spacing: 12) {
-                // Sömn
-                TappableMetricCard(
-                    icon: "bed.double.fill",
-                    label: "Sömn",
-                    value: viewModel.sleepData?.formattedDuration ?? "-",
-                    unit: "",
-                    hasData: viewModel.sleepData != nil,
-                    color: .vitalySleep
+                // Sleep - Enhanced card with REM and Deep sleep
+                SleepMetricCard(
+                    sleepData: viewModel.sleepData,
+                    evaluation: viewModel.sleepData != nil ? healthRef.evaluateSleep(hours: viewModel.sleepData!.totalHours) : nil
                 ) {
                     selectedMetric = .sleep
                 }
 
-                // Steg
+                // Steps
                 TappableMetricCard(
                     icon: "figure.walk",
-                    label: "Steg",
-                    value: "\(viewModel.activityData?.steps ?? 0)",
+                    label: "Steps",
+                    value: viewModel.activityData != nil ? "\(viewModel.activityData!.steps)" : "--",
                     unit: "",
                     hasData: viewModel.activityData != nil,
-                    color: .vitalyActivity
+                    color: .vitalyActivity,
+                    evaluation: viewModel.activityData != nil ? healthRef.evaluateSteps(viewModel.activityData!.steps) : nil
                 ) {
                     selectedMetric = .steps
                 }
 
-                // RR (Andningsfrekvens)
+                // RR (Respiratory Rate) - hardcoded until HealthKit supports it
                 TappableMetricCard(
                     icon: "lungs.fill",
                     label: "RR",
                     value: "13.1",
                     unit: "rpm",
                     hasData: true,
-                    color: .vitalySleep
+                    color: .vitalySleep,
+                    evaluation: healthRef.evaluateRespiratoryRate(13.1)
                 ) {
                     selectedMetric = .respiratoryRate
                 }
 
-                // RHR (Vilopuls)
+                // RHR (Resting Heart Rate)
                 TappableMetricCard(
                     icon: "heart.fill",
                     label: "RHR",
-                    value: String(format: "%.0f", viewModel.heartData?.restingHeartRate ?? 0),
+                    value: viewModel.heartData != nil ? String(format: "%.0f", viewModel.heartData!.restingHeartRate) : "--",
                     unit: "bpm",
-                    hasData: viewModel.heartData?.restingHeartRate != nil,
-                    color: .vitalyHeart
+                    hasData: viewModel.heartData != nil && viewModel.heartData!.restingHeartRate > 0,
+                    color: .vitalyHeart,
+                    evaluation: viewModel.heartData != nil ? healthRef.evaluateRestingHeartRate(viewModel.heartData!.restingHeartRate) : nil
                 ) {
                     selectedMetric = .restingHeartRate
                 }
@@ -232,22 +273,24 @@ struct DashboardView: View {
                 TappableMetricCard(
                     icon: "waveform.path.ecg",
                     label: "HRV",
-                    value: String(format: "%.0f", viewModel.heartData?.hrv ?? 0),
+                    value: viewModel.heartData?.hrv != nil ? String(format: "%.0f", viewModel.heartData!.hrv!) : "--",
                     unit: "ms",
                     hasData: viewModel.heartData?.hrv != nil,
-                    color: .vitalyRecovery
+                    color: .vitalyRecovery,
+                    evaluation: viewModel.heartData?.hrv != nil ? healthRef.evaluateHRV(viewModel.heartData!.hrv!) : nil
                 ) {
                     selectedMetric = .hrv
                 }
 
-                // SpO2
+                // SpO2 - hardcoded until HealthKit supports it
                 TappableMetricCard(
                     icon: "drop.fill",
                     label: "SpO2",
                     value: "98",
                     unit: "%",
                     hasData: true,
-                    color: .vitalyPrimary
+                    color: .vitalyPrimary,
+                    evaluation: healthRef.evaluateOxygenSaturation(98)
                 ) {
                     selectedMetric = .oxygenSaturation
                 }
@@ -255,31 +298,31 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - 7-dagars Trend
+    // MARK: - 7-day Trend
     private var weeklyTrendSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Senaste 7 dagarna")
+                Text("Last 7 Days")
                     .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(Color.vitalyTextPrimary)
 
                 Spacer()
 
-                Text("Översikt")
+                Text("Overview")
                     .font(.subheadline)
                     .foregroundStyle(Color.vitalyTextSecondary)
             }
 
             VitalyCard {
                 VStack(spacing: 16) {
-                    // Mini-trendgraf
+                    // Mini trend chart
                     WeeklyTrendChart(data: viewModel.weeklyTrendData)
                         .frame(height: 120)
 
-                    // Veckostatistik
+                    // Weekly statistics
                     HStack(spacing: 0) {
                         WeekStatItem(
-                            label: "Snitt sömn",
+                            label: "Avg Sleep",
                             value: viewModel.averageSleepHours,
                             unit: "h",
                             trend: .up
@@ -290,7 +333,7 @@ struct DashboardView: View {
                             .background(Color.vitalySurface)
 
                         WeekStatItem(
-                            label: "Snitt steg",
+                            label: "Avg Steps",
                             value: Double(viewModel.averageSteps),
                             unit: "",
                             trend: .stable
@@ -301,7 +344,7 @@ struct DashboardView: View {
                             .background(Color.vitalySurface)
 
                         WeekStatItem(
-                            label: "Snitt HRV",
+                            label: "Avg HRV",
                             value: viewModel.averageHRV,
                             unit: "ms",
                             trend: .down
@@ -313,10 +356,10 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - Aktivitetstidslinje
+    // MARK: - Activity Timeline
     private var activityTimelineSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Aktiviteter idag")
+            Text("Activities Today")
                 .font(.system(size: 18, weight: .bold))
                 .foregroundStyle(Color.vitalyTextPrimary)
 
@@ -351,11 +394,11 @@ struct DashboardView: View {
                         }
 
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Ingen aktivitet än")
+                            Text("No activity yet")
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(Color.vitalyTextPrimary)
 
-                            Text("Dina träningspass visas här")
+                            Text("Your workouts will appear here")
                                 .font(.caption)
                                 .foregroundStyle(Color.vitalyTextSecondary)
                         }
@@ -375,7 +418,7 @@ struct DashboardView: View {
                 .progressViewStyle(CircularProgressViewStyle(tint: .vitalyPrimary))
                 .scaleEffect(1.2)
 
-            Text("Laddar hälsodata...")
+            Text("Loading health data...")
                 .font(.subheadline)
                 .foregroundStyle(Color.vitalyTextSecondary)
         }
@@ -390,11 +433,11 @@ struct DashboardView: View {
                     .font(.system(size: 48))
                     .foregroundStyle(Color.vitalyPrimary)
 
-                Text("Ingen data än")
+                Text("No data yet")
                     .font(.headline)
                     .foregroundStyle(Color.vitalyTextPrimary)
 
-                Text("Anslut till HealthKit för att börja spåra din hälsa.")
+                Text("Connect to HealthKit to start tracking your health.")
                     .font(.subheadline)
                     .foregroundStyle(Color.vitalyTextSecondary)
                     .multilineTextAlignment(.center)
@@ -412,34 +455,20 @@ struct DashboardView: View {
                     .font(.system(size: 40))
                     .foregroundStyle(Color.vitalyAccent)
 
-                Text("Kunde inte ladda data")
+                Text("Could not load data")
                     .font(.headline)
                     .foregroundStyle(Color.vitalyTextPrimary)
 
-                HStack(spacing: 12) {
-                    Button {
-                        Task { await viewModel.refresh() }
-                    } label: {
-                        Text("Försök igen")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(LinearGradient.vitalyGradient)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-
-                    Button {
-                        viewModel.loadDemoData()
-                    } label: {
-                        Text("Visa demo")
-                            .font(.headline)
-                            .foregroundStyle(Color.vitalyPrimary)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(Color.vitalyPrimary.opacity(0.15))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
+                Button {
+                    Task { await viewModel.refresh() }
+                } label: {
+                    Text("Try Again")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(LinearGradient.vitalyGradient)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
             }
             .padding(24)
@@ -458,40 +487,39 @@ struct DashboardView: View {
 
     private var statusText: String {
         let score = viewModel.overallScore
-        if score >= 80 { return "Utmärkt" }
-        if score >= 60 { return "Bra" }
-        return "Vila rekommenderas"
+        if score >= 80 { return "Excellent" }
+        if score >= 60 { return "Good" }
+        return "Rest recommended"
     }
 
     private var summaryMessage: String {
-        guard viewModel.hasData else { return "Laddar..." }
+        guard viewModel.hasData else { return "Loading..." }
 
         let sleep = viewModel.sleepData
         let hrv = viewModel.heartData?.hrv ?? 0
 
         if let s = sleep, s.totalHours >= 7 && hrv >= 50 {
-            return "Du har sovit bra och din kropp visar god återhämtning. En perfekt dag för aktivitet!"
+            return "You slept well and your body shows good recovery. A perfect day for activity!"
         } else if let s = sleep, s.totalHours < 6 {
-            return "Din sömn var kortare än rekommenderat. Prioritera vila och undvik intensiv träning idag."
+            return "Your sleep was shorter than recommended. Prioritize rest and avoid intense training today."
         } else {
-            return "Din kropp återhämtar sig. Lyssna på hur du känner dig och anpassa dagens aktivitet därefter."
+            return "Your body is recovering. Listen to how you feel and adjust today's activity accordingly."
         }
     }
 
     private var sleepChange: Double {
-        // Simulerad förändring jämfört med igår
-        return 0.5
+        viewModel.sleepChange
     }
 
     private var stepsChange: Double {
-        return -1200
+        Double(viewModel.stepsChange)
     }
 
     private var hrvChange: Double {
-        return 3
+        viewModel.hrvChange
     }
 
-    // Helper för MetricDetailSheet
+    // Helper for MetricDetailSheet
     private func currentValue(for metric: DashboardMetric) -> Double {
         switch metric {
         case .sleep: return viewModel.sleepData?.totalHours ?? 0
@@ -505,24 +533,41 @@ struct DashboardView: View {
 
     private func yesterdayValue(for metric: DashboardMetric) -> Double {
         switch metric {
-        case .sleep: return 7.0
-        case .steps: return 9500
-        case .respiratoryRate: return 12.8
-        case .restingHeartRate: return 60
-        case .hrv: return 52
-        case .oxygenSaturation: return 97
+        case .sleep: return viewModel.yesterdaySleepHours
+        case .steps: return Double(viewModel.yesterdaySteps)
+        case .respiratoryRate: return 12.8 // Not available in HealthKit
+        case .restingHeartRate: return viewModel.yesterdayData?.heart.restingHeartRate ?? 60
+        case .hrv: return viewModel.yesterdayHRV
+        case .oxygenSaturation: return 97 // Not available on all devices
         }
     }
 
     private func weekData(for metric: DashboardMetric) -> [Double] {
-        // Simulerad veckodata
+        guard let weekly = viewModel.weeklyData else {
+            // Fallback if no data available
+            switch metric {
+            case .sleep: return [7.2, 6.5, 7.8, 6.9, 7.5, 8.0, viewModel.sleepData?.totalHours ?? 7.3]
+            case .steps: return [8500, 10200, 7800, 9100, 8900, 11000, Double(viewModel.activityData?.steps ?? 8500)]
+            case .respiratoryRate: return [13.0, 12.8, 13.2, 13.1, 12.9, 13.0, 13.1]
+            case .restingHeartRate: return [58, 60, 57, 59, 58, 56, viewModel.heartData?.restingHeartRate ?? 58]
+            case .hrv: return [52, 48, 55, 50, 53, 58, viewModel.heartData?.hrv ?? 55]
+            case .oxygenSaturation: return [97, 98, 98, 97, 98, 99, 98]
+            }
+        }
+
         switch metric {
-        case .sleep: return [7.2, 6.5, 7.8, 6.9, 7.5, 8.0, 7.3]
-        case .steps: return [8500, 10200, 7800, 9100, 8900, 11000, 8500]
-        case .respiratoryRate: return [13.0, 12.8, 13.2, 13.1, 12.9, 13.0, 13.1]
-        case .restingHeartRate: return [58, 60, 57, 59, 58, 56, 58]
-        case .hrv: return [52, 48, 55, 50, 53, 58, 55]
-        case .oxygenSaturation: return [97, 98, 98, 97, 98, 99, 98]
+        case .sleep:
+            return weekly.sleepData.map { $0?.totalHours ?? 0 }
+        case .steps:
+            return weekly.activityData.map { Double($0.steps) }
+        case .respiratoryRate:
+            return [13.0, 12.8, 13.2, 13.1, 12.9, 13.0, 13.1] // Not available
+        case .restingHeartRate:
+            return weekly.heartData.map { $0.restingHeartRate ?? 60 }
+        case .hrv:
+            return weekly.heartData.map { $0.hrv ?? 50 }
+        case .oxygenSaturation:
+            return [97, 98, 98, 97, 98, 99, 98] // Not available on all devices
         }
     }
 }
@@ -535,19 +580,19 @@ enum DashboardMetric: String, Identifiable {
 
     var title: String {
         switch self {
-        case .sleep: return "Sömn"
-        case .steps: return "Steg"
-        case .respiratoryRate: return "Andningsfrekvens"
-        case .restingHeartRate: return "Vilopuls"
-        case .hrv: return "Hjärtvariabilitet"
-        case .oxygenSaturation: return "Syremättnad"
+        case .sleep: return "Sleep"
+        case .steps: return "Steps"
+        case .respiratoryRate: return "Respiratory Rate"
+        case .restingHeartRate: return "Resting Heart Rate"
+        case .hrv: return "Heart Rate Variability"
+        case .oxygenSaturation: return "Oxygen Saturation"
         }
     }
 
     var unit: String {
         switch self {
-        case .sleep: return "timmar"
-        case .steps: return "steg"
+        case .sleep: return "hours"
+        case .steps: return "steps"
         case .respiratoryRate: return "rpm"
         case .restingHeartRate: return "bpm"
         case .hrv: return "ms"
@@ -621,48 +666,227 @@ struct TappableMetricCard: View {
     let unit: String
     let hasData: Bool
     let color: Color
+    let evaluation: MetricEvaluation?
     let action: () -> Void
+
+    init(icon: String, label: String, value: String, unit: String, hasData: Bool, color: Color, evaluation: MetricEvaluation? = nil, action: @escaping () -> Void) {
+        self.icon = icon
+        self.label = label
+        self.value = value
+        self.unit = unit
+        self.hasData = hasData
+        self.color = color
+        self.evaluation = evaluation
+        self.action = action
+    }
 
     var body: some View {
         Button(action: action) {
-            HStack {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 6) {
-                        Image(systemName: icon)
-                            .font(.system(size: 14))
-                            .foregroundStyle(color)
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 6) {
+                            Image(systemName: icon)
+                                .font(.system(size: 14))
+                                .foregroundStyle(color)
 
-                        Text(label)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(color)
+                            Text(label)
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(color)
+                        }
+
+                        if hasData {
+                            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                Text(value)
+                                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                                    .foregroundStyle(Color.vitalyTextPrimary)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.7)
+
+                                if !unit.isEmpty {
+                                    Text(unit)
+                                        .font(.caption)
+                                        .foregroundStyle(Color.vitalyTextSecondary)
+                                }
+                            }
+                        } else {
+                            Text("--")
+                                .font(.system(size: 24, weight: .bold, design: .rounded))
+                                .foregroundStyle(Color.vitalyTextSecondary.opacity(0.6))
+                        }
                     }
 
-                    if hasData {
-                        HStack(alignment: .firstTextBaseline, spacing: 4) {
-                            Text(value)
-                                .font(.system(size: 26, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color.vitalyTextPrimary)
+                    Spacer()
 
-                            if !unit.isEmpty {
-                                Text(unit)
-                                    .font(.caption)
-                                    .foregroundStyle(Color.vitalyTextSecondary)
-                            }
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundStyle(Color.vitalyTextSecondary)
+
+                        if let eval = evaluation, hasData {
+                            HealthStatusIndicator(evaluation: eval)
                         }
-                    } else {
-                        Text("Ingen data")
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundStyle(Color.vitalyTextSecondary.opacity(0.6))
                     }
                 }
+                .padding(16)
 
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundStyle(Color.vitalyTextSecondary)
+                // Simple color bar at bottom (always show for consistent height)
+                Capsule()
+                    .fill(hasData && evaluation != nil ? evaluation!.color : Color.clear)
+                    .frame(height: 3)
+                    .padding(.horizontal, 8)
+                    .padding(.bottom, 8)
             }
-            .padding(16)
+            .frame(minHeight: 100)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.vitalyCardBackground)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.white.opacity(0.05), lineWidth: 1)
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Enhanced Sleep Card with REM and Deep Sleep
+struct SleepMetricCard: View {
+    let sleepData: SleepData?
+    let evaluation: MetricEvaluation?
+    let action: () -> Void
+
+    private var hasData: Bool { sleepData != nil }
+
+    private var deepSleepMinutes: Int {
+        guard let sleep = sleepData else { return 0 }
+        return Int(sleep.deepSleep / 60)
+    }
+
+    private var remSleepMinutes: Int {
+        guard let sleep = sleepData else { return 0 }
+        return Int(sleep.remSleep / 60)
+    }
+
+    private var deepSleepPercent: Int {
+        guard let sleep = sleepData, sleep.totalDuration > 0 else { return 0 }
+        return Int((sleep.deepSleep / sleep.totalDuration) * 100)
+    }
+
+    private var remSleepPercent: Int {
+        guard let sleep = sleepData, sleep.totalDuration > 0 else { return 0 }
+        return Int((sleep.remSleep / sleep.totalDuration) * 100)
+    }
+
+    // Goal indicators
+    private var isDeepSleepGood: Bool { deepSleepPercent >= 15 }
+    private var isRemSleepGood: Bool { remSleepPercent >= 20 }
+    private var sleepGoalPercent: Int {
+        guard let sleep = sleepData else { return 0 }
+        return min(100, Int((sleep.totalHours / 8.0) * 100))
+    }
+
+    private func formatMinutesToHoursAndMinutes(_ minutes: Int) -> String {
+        if minutes < 60 {
+            return "\(minutes)m"
+        }
+        let hours = minutes / 60
+        let mins = minutes % 60
+        if mins == 0 {
+            return "\(hours)h"
+        }
+        return "\(hours)h \(mins)m"
+    }
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 0) {
+                // Header
+                HStack {
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "bed.double.fill")
+                                .font(.system(size: 14))
+                                .foregroundStyle(Color.vitalySleep)
+
+                            Text("Sleep")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(Color.vitalySleep)
+                        }
+
+                        if hasData {
+                            Text(sleepData?.formattedDuration ?? "--")
+                                .font(.system(size: 22, weight: .bold, design: .rounded))
+                                .foregroundStyle(Color.vitalyTextPrimary)
+                        } else {
+                            Text("--")
+                                .font(.system(size: 22, weight: .bold, design: .rounded))
+                                .foregroundStyle(Color.vitalyTextSecondary.opacity(0.6))
+                        }
+                    }
+
+                    Spacer()
+
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundStyle(Color.vitalyTextSecondary)
+
+                        if let eval = evaluation, hasData {
+                            HealthStatusIndicator(evaluation: eval)
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 14)
+                .padding(.bottom, 8)
+
+                // Sleep stages - compact row
+                if hasData {
+                    HStack(spacing: 12) {
+                        // Deep sleep
+                        HStack(spacing: 4) {
+                            Circle()
+                                .fill(Color(red: 0.4, green: 0.3, blue: 0.7))
+                                .frame(width: 6, height: 6)
+                            Text("Deep \(formatMinutesToHoursAndMinutes(deepSleepMinutes))")
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundStyle(Color.vitalyTextSecondary)
+                            if isDeepSleepGood {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 8))
+                                    .foregroundStyle(Color.vitalyExcellent)
+                            }
+                        }
+
+                        // REM sleep
+                        HStack(spacing: 4) {
+                            Circle()
+                                .fill(Color.vitalySleep)
+                                .frame(width: 6, height: 6)
+                            Text("REM \(formatMinutesToHoursAndMinutes(remSleepMinutes))")
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundStyle(Color.vitalyTextSecondary)
+                            if isRemSleepGood {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 8))
+                                    .foregroundStyle(Color.vitalyExcellent)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 12)
+                }
+
+                // Color bar at bottom
+                Capsule()
+                    .fill(hasData ? Color.vitalySleep : Color.clear)
+                    .frame(height: 3)
+                    .padding(.horizontal, 8)
+                    .padding(.bottom, 8)
+            }
+            .frame(minHeight: 100)
             .background(
                 RoundedRectangle(cornerRadius: 16)
                     .fill(Color.vitalyCardBackground)
@@ -681,15 +905,15 @@ struct WeeklyTrendChart: View {
 
     var body: some View {
         if data.isEmpty {
-            Text("Ingen trenddata")
+            Text("No trend data")
                 .font(.subheadline)
                 .foregroundStyle(Color.vitalyTextSecondary)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
             Chart(data) { item in
                 BarMark(
-                    x: .value("Dag", item.dayName),
-                    y: .value("Poäng", item.score)
+                    x: .value("Day", item.dayName),
+                    y: .value("Score", item.score)
                 )
                 .foregroundStyle(
                     LinearGradient(
@@ -813,22 +1037,18 @@ struct ActivityTimelineRow: View {
             }
 
             Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundStyle(Color.vitalyTextSecondary)
         }
         .padding(16)
     }
 
     private var workoutIcon: String {
         switch workout.workoutType.lowercased() {
-        case "löpning": return "figure.run"
-        case "promenad": return "figure.walk"
-        case "cykling": return "figure.outdoor.cycle"
-        case "simning": return "figure.pool.swim"
+        case "löpning", "running": return "figure.run"
+        case "promenad", "walking": return "figure.walk"
+        case "cykling", "cycling": return "figure.outdoor.cycle"
+        case "simning", "swimming": return "figure.pool.swim"
         case "yoga": return "figure.yoga"
-        case "styrketräning": return "dumbbell.fill"
+        case "styrketräning", "strength training": return "dumbbell.fill"
         case "hiit": return "flame.fill"
         default: return "figure.mixed.cardio"
         }
@@ -836,11 +1056,11 @@ struct ActivityTimelineRow: View {
 
     private var workoutColor: Color {
         switch workout.workoutType.lowercased() {
-        case "löpning": return .vitalyActivity
-        case "promenad": return .vitalyExcellent
-        case "cykling": return .vitalyRecovery
-        case "simning": return .vitalySleep
-        case "styrketräning": return .vitalyHeart
+        case "löpning", "running": return .vitalyActivity
+        case "promenad", "walking": return .vitalyExcellent
+        case "cykling", "cycling": return .vitalyRecovery
+        case "simning", "swimming": return .vitalySleep
+        case "styrketräning", "strength training": return .vitalyHeart
         default: return .vitalyPrimary
         }
     }
@@ -848,7 +1068,7 @@ struct ActivityTimelineRow: View {
     private var formattedTime: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
-        formatter.locale = Locale(identifier: "sv_SE")
+        formatter.locale = Locale(identifier: "en_US")
         return formatter.string(from: workout.startTime)
     }
 }

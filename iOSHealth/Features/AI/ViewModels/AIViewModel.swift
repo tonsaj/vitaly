@@ -16,6 +16,9 @@ final class AIViewModel {
     var chatMessages: [ChatMessage] = []
     var currentMessage = ""
 
+    // Extended context for background data (weight, GLP-1, etc)
+    var extendedContext: ExtendedHealthContext?
+
     // MARK: - Dependencies
 
     private let geminiService: GeminiService
@@ -41,7 +44,7 @@ final class AIViewModel {
         do {
             insights = try await firestoreService.fetchInsights(userId: userId, limit: 50)
         } catch {
-            errorMessage = "Kunde inte ladda insikter: \(error.localizedDescription)"
+            errorMessage = "Could not load insights: \(error.localizedDescription)"
         }
 
         isLoading = false
@@ -59,13 +62,14 @@ final class AIViewModel {
             let insight = try await geminiService.generateDailySummary(
                 sleep: sleep,
                 activity: activity,
-                heart: heart
+                heart: heart,
+                extendedContext: extendedContext
             )
 
             try await firestoreService.saveInsight(userId: userId, insight: insight)
             await loadInsights()
         } catch {
-            errorMessage = "Kunde inte generera insikt: \(error.localizedDescription)"
+            errorMessage = "Could not generate insight: \(error.localizedDescription)"
         }
 
         isGenerating = false
@@ -76,11 +80,14 @@ final class AIViewModel {
         errorMessage = nil
 
         do {
-            let insight = try await geminiService.analyzeSleep(sleepData: sleepData)
+            let insight = try await geminiService.analyzeSleep(
+                sleepData: sleepData,
+                extendedContext: extendedContext
+            )
             try await firestoreService.saveInsight(userId: userId, insight: insight)
             await loadInsights()
         } catch {
-            errorMessage = "Kunde inte generera sömnanalys: \(error.localizedDescription)"
+            errorMessage = "Could not generate sleep analysis: \(error.localizedDescription)"
         }
 
         isGenerating = false
@@ -94,12 +101,13 @@ final class AIViewModel {
             let insight = try await geminiService.generateRecoveryAdvice(
                 sleep: sleep,
                 heart: heart,
-                recentActivity: recentActivity
+                recentActivity: recentActivity,
+                extendedContext: extendedContext
             )
             try await firestoreService.saveInsight(userId: userId, insight: insight)
             await loadInsights()
         } catch {
-            errorMessage = "Kunde inte generera återhämtningsråd: \(error.localizedDescription)"
+            errorMessage = "Could not generate recovery advice: \(error.localizedDescription)"
         }
 
         isGenerating = false
@@ -118,7 +126,7 @@ final class AIViewModel {
             try await firestoreService.saveInsight(userId: userId, insight: insight)
             await loadInsights()
         } catch {
-            errorMessage = "Kunde inte generera veckorapport: \(error.localizedDescription)"
+            errorMessage = "Could not generate weekly report: \(error.localizedDescription)"
         }
 
         isGenerating = false
@@ -142,9 +150,38 @@ final class AIViewModel {
         insights.filter { !$0.isRead }.count
     }
 
+    // MARK: - Deep Analysis
+
+    func generateDeepAnalysis(
+        insightType: InsightType,
+        sleepData: [SleepData],
+        activityData: [ActivityData],
+        heartData: [HeartData],
+        userProfile: UserHealthProfile? = nil
+    ) async {
+        isGenerating = true
+        errorMessage = nil
+
+        do {
+            let insight = try await geminiService.generateDeepAnalysis(
+                insightType: insightType,
+                sleepData: sleepData,
+                activityData: activityData,
+                heartData: heartData,
+                userProfile: userProfile
+            )
+            try await firestoreService.saveInsight(userId: userId, insight: insight)
+            await loadInsights()
+        } catch {
+            errorMessage = "Could not generate deep analysis: \(error.localizedDescription)"
+        }
+
+        isGenerating = false
+    }
+
     // MARK: - Chat Management
 
-    func sendMessage(healthContext: HealthContext) async {
+    func sendMessage(healthContext: ExtendedHealthContext) async {
         guard !currentMessage.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return
         }
@@ -174,11 +211,11 @@ final class AIViewModel {
 
             chatMessages.append(aiMessage)
         } catch {
-            errorMessage = "Kunde inte skicka meddelande: \(error.localizedDescription)"
+            errorMessage = "Could not send message: \(error.localizedDescription)"
 
             let errorMessage = ChatMessage(
                 id: UUID().uuidString,
-                content: "Förlåt, jag kunde inte behandla din förfrågan. Försök igen senare.",
+                content: "Sorry, I couldn't process your request. Please try again later.",
                 isUser: false,
                 timestamp: Date()
             )
@@ -187,6 +224,19 @@ final class AIViewModel {
         }
 
         isSendingMessage = false
+    }
+
+    // Legacy support for simple HealthContext
+    func sendMessage(healthContext: HealthContext) async {
+        let extendedContext = ExtendedHealthContext(
+            todaySleep: healthContext.sleep,
+            todayActivity: healthContext.activity,
+            todayHeart: healthContext.heart,
+            sleepHistory: [],
+            activityHistory: [],
+            heartHistory: []
+        )
+        await sendMessage(healthContext: extendedContext)
     }
 
     func clearChat() {

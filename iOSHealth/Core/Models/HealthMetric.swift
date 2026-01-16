@@ -8,10 +8,10 @@ enum MetricType: String, Codable, CaseIterable {
 
     var title: String {
         switch self {
-        case .sleep: return "Sömn"
-        case .activity: return "Aktivitet"
-        case .heart: return "Hjärta"
-        case .recovery: return "Återhämtning"
+        case .sleep: return "Sleep"
+        case .activity: return "Activity"
+        case .heart: return "Heart"
+        case .recovery: return "Recovery"
         }
     }
 

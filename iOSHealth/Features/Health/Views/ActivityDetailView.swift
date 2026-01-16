@@ -28,8 +28,11 @@ struct ActivityDetailView: View {
             }
             .padding()
         }
+        .scrollBounceBehavior(.basedOnSize)
+        .clipped()
+        .contentShape(Rectangle())
         .background(Color.vitalyBackground)
-        .navigationTitle("Aktivitet")
+        .navigationTitle("Activity")
         .navigationBarTitleDisplayMode(.large)
     }
 

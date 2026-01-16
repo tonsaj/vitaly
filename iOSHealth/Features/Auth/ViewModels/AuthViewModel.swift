@@ -36,10 +36,15 @@ final class AuthViewModel {
 
     // MARK: - Phone Authentication Methods
     func sendVerificationCode() async {
+        print("📱 AuthViewModel: sendVerificationCode called")
+
         guard isPhoneNumberValid else {
+            print("❌ AuthViewModel: Phone number validation failed")
             showErrorMessage("Ange ett giltigt svenskt telefonnummer")
             return
         }
+
+        print("✅ AuthViewModel: Phone number validation passed")
 
         isLoading = true
         errorMessage = nil
@@ -47,9 +52,14 @@ final class AuthViewModel {
 
         do {
             let formattedNumber = formatPhoneNumber(phoneNumber)
+            print("📱 AuthViewModel: Calling authService.sendVerificationCode with: \(formattedNumber)")
+
             verificationID = try await authService.sendVerificationCode(phoneNumber: formattedNumber)
+
+            print("✅ AuthViewModel: Received verification ID: \(verificationID ?? "nil")")
             authStep = .codeVerification
         } catch {
+            print("❌ AuthViewModel: Send verification code failed: \(error)")
             handleAuthError(error)
         }
 
@@ -57,18 +67,29 @@ final class AuthViewModel {
     }
 
     func verifyCode() async {
+        print("📱 AuthViewModel: verifyCode called")
+
         guard let verificationID = verificationID, isVerificationCodeValid else {
+            print("❌ AuthViewModel: Verification code validation failed")
+            print("❌ AuthViewModel: verificationID: \(verificationID ?? "nil")")
+            print("❌ AuthViewModel: code: \(verificationCode)")
+            print("❌ AuthViewModel: isVerificationCodeValid: \(isVerificationCodeValid)")
             showErrorMessage("Ange en giltig verifieringskod")
             return
         }
+
+        print("✅ AuthViewModel: Verification code validation passed")
 
         isLoading = true
         errorMessage = nil
         showError = false
 
         do {
+            print("📱 AuthViewModel: Calling authService.verifyCode")
             try await authService.verifyCode(verificationID: verificationID, code: verificationCode)
+            print("✅ AuthViewModel: Verification successful")
         } catch {
+            print("❌ AuthViewModel: Verification failed: \(error)")
             handleAuthError(error)
         }
 
@@ -83,6 +104,33 @@ final class AuthViewModel {
         authStep = .phoneInput
         verificationCode = ""
         verificationID = nil
+    }
+
+    func signInWithGoogle() {
+        Task {
+            isLoading = true
+            errorMessage = nil
+            showError = false
+
+            do {
+                try await authService.signInWithGoogle()
+            } catch {
+                handleAuthError(error)
+            }
+
+            isLoading = false
+        }
+    }
+
+    func triggerAppleSignIn() {
+        let provider = ASAuthorizationAppleIDProvider()
+        let request = provider.createRequest()
+        request.requestedScopes = [.fullName, .email]
+
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = AppleSignInDelegate.shared
+        AppleSignInDelegate.shared.viewModel = self
+        controller.performRequests()
     }
 
     func signInWithApple(result: Result<ASAuthorization, Error>) {
@@ -119,22 +167,53 @@ final class AuthViewModel {
     private func isValidSwedishPhoneNumber(_ phone: String) -> Bool {
         let cleaned = phone.replacingOccurrences(of: " ", with: "")
             .replacingOccurrences(of: "-", with: "")
+            .replacingOccurrences(of: "(", with: "")
+            .replacingOccurrences(of: ")", with: "")
 
-        // Match Swedish phone numbers: +46XXXXXXXXX or 07XXXXXXXX
-        let phoneRegex = "^(\\+46|0)[1-9]\\d{8,9}$"
+        print("📱 Phone Validation: Original: \(phone)")
+        print("📱 Phone Validation: Cleaned: \(cleaned)")
+
+        // More flexible regex for Swedish phone numbers
+        // Supports: +46XXXXXXXXX (9-10 digits), 07XXXXXXXX (10 digits), 46XXXXXXXXX
+        let phoneRegex = "^(\\+46|0046|0)[1-9]\\d{8,9}$"
         let phonePredicate = NSPredicate(format: "SELF MATCHES %@", phoneRegex)
-        return phonePredicate.evaluate(with: cleaned)
+        let isValid = phonePredicate.evaluate(with: cleaned)
+
+        print("📱 Phone Validation: Is valid: \(isValid)")
+        return isValid
     }
 
     private func formatPhoneNumber(_ phone: String) -> String {
         let cleaned = phone.replacingOccurrences(of: " ", with: "")
             .replacingOccurrences(of: "-", with: "")
+            .replacingOccurrences(of: "(", with: "")
+            .replacingOccurrences(of: ")", with: "")
 
-        // Convert 07XXXXXXXX to +46 7XXXXXXXX
-        if cleaned.hasPrefix("0") {
-            return "+46" + cleaned.dropFirst()
+        print("📱 Phone Format: Input: \(phone)")
+        print("📱 Phone Format: Cleaned: \(cleaned)")
+
+        var formatted: String
+
+        // Convert various formats to +46 7XXXXXXXX
+        if cleaned.hasPrefix("0046") {
+            // 0046 7XXXXXXXX -> +46 7XXXXXXXX
+            formatted = "+46" + cleaned.dropFirst(4)
+        } else if cleaned.hasPrefix("46") && !cleaned.hasPrefix("+46") {
+            // 46 7XXXXXXXX -> +46 7XXXXXXXX
+            formatted = "+46" + cleaned.dropFirst(2)
+        } else if cleaned.hasPrefix("0") {
+            // 07XXXXXXXX -> +46 7XXXXXXXX
+            formatted = "+46" + cleaned.dropFirst()
+        } else if cleaned.hasPrefix("+46") {
+            // Already correctly formatted
+            formatted = cleaned
+        } else {
+            // Assume it's missing country code
+            formatted = "+46" + cleaned
         }
-        return cleaned
+
+        print("📱 Phone Format: Output: \(formatted)")
+        return formatted
     }
 
     // MARK: - Error Handling
@@ -166,4 +245,18 @@ final class AuthViewModel {
 enum AuthStep {
     case phoneInput
     case codeVerification
+}
+
+// MARK: - Apple Sign In Delegate
+class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate {
+    static let shared = AppleSignInDelegate()
+    weak var viewModel: AuthViewModel?
+
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        viewModel?.signInWithApple(result: .success(authorization))
+    }
+
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        viewModel?.signInWithApple(result: .failure(error))
+    }
 }

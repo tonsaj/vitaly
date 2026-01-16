@@ -11,9 +11,11 @@ settings:
     SWIFT_VERSION: "5.9"
     MARKETING_VERSION: "1.0"
     CURRENT_PROJECT_VERSION: "1"
-    DEVELOPMENT_TEAM: ""
+    DEVELOPMENT_TEAM: "WKG6FZ4FHW"
     CODE_SIGN_STYLE: Automatic
     INFOPLIST_FILE: iOSHealth/Resources/Info.plist
+    VERSIONING_SYSTEM: "apple-generic"
+    OTHER_LDFLAGS: ["-ObjC"]
 
 packages:
   Firebase:
@@ -22,6 +24,9 @@ packages:
   GoogleGenerativeAI:
     url: https://github.com/google/generative-ai-swift
     from: "0.5.0"
+  GoogleSignIn:
+    url: https://github.com/google/GoogleSignIn-iOS
+    from: "8.0.0"
 
 targets:
   Vitaly:
@@ -48,9 +53,14 @@ targets:
         product: FirebaseFirestore
       - package: GoogleGenerativeAI
         product: GoogleGenerativeAI
+      - package: GoogleSignIn
+        product: GoogleSignIn
+      - package: GoogleSignIn
+        product: GoogleSignInSwift
     entitlements:
       path: iOSHealth/iOSHealth.entitlements
       properties:
+        aps-environment: development
         com.apple.developer.healthkit: true
         com.apple.developer.healthkit.background-delivery: true
         com.apple.developer.applesignin:

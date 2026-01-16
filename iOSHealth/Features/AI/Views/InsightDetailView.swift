@@ -3,8 +3,10 @@ import SwiftUI
 struct InsightDetailView: View {
     let insight: AIInsight
     let onAppear: () -> Void
+    var onDeepAnalysis: (() -> Void)? = nil
 
     @Environment(\.dismiss) private var dismiss
+    @State private var isGeneratingDeepAnalysis = false
 
     var body: some View {
         NavigationStack {
@@ -26,6 +28,66 @@ struct InsightDetailView: View {
 
                                 metricsSection
                             }
+
+                            // Deep Analysis Button - hide if already a deep analysis
+                            if let onDeepAnalysis = onDeepAnalysis, !isDeepAnalysis {
+                                Divider()
+                                    .background(Color.vitalyTextSecondary.opacity(0.2))
+
+                                Button {
+                                    isGeneratingDeepAnalysis = true
+                                    onDeepAnalysis()
+                                    // Dismiss after a short delay to show the action was triggered
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                        dismiss()
+                                    }
+                                } label: {
+                                    HStack(spacing: 12) {
+                                        ZStack {
+                                            Circle()
+                                                .fill(isGeneratingDeepAnalysis ? Color.vitalyTextSecondary.opacity(0.15) : typeColor.opacity(0.15))
+                                                .frame(width: 44, height: 44)
+
+                                            if isGeneratingDeepAnalysis {
+                                                ProgressView()
+                                                    .tint(typeColor)
+                                            } else {
+                                                Image(systemName: "brain.head.profile")
+                                                    .font(.system(size: 18))
+                                                    .foregroundStyle(typeColor)
+                                            }
+                                        }
+
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(isGeneratingDeepAnalysis ? "Generating..." : "Deeper Analysis")
+                                                .font(.subheadline.weight(.semibold))
+                                                .foregroundStyle(Color.vitalyTextPrimary)
+
+                                            Text(isGeneratingDeepAnalysis ? "Please wait" : "Get a comprehensive 30-day analysis")
+                                                .font(.caption)
+                                                .foregroundStyle(Color.vitalyTextSecondary)
+                                        }
+
+                                        Spacer()
+
+                                        if !isGeneratingDeepAnalysis {
+                                            Image(systemName: "arrow.right.circle.fill")
+                                                .font(.title2)
+                                                .foregroundStyle(typeColor)
+                                        }
+                                    }
+                                    .padding(16)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .fill(isGeneratingDeepAnalysis ? Color.vitalyTextSecondary.opacity(0.05) : typeColor.opacity(0.08))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .stroke(isGeneratingDeepAnalysis ? Color.vitalyTextSecondary.opacity(0.1) : typeColor.opacity(0.2), lineWidth: 1)
+                                            )
+                                    )
+                                }
+                                .disabled(isGeneratingDeepAnalysis)
+                            }
                         }
                         .padding(20)
                         .background(
@@ -37,6 +99,9 @@ struct InsightDetailView: View {
                         .padding(.bottom, 20)
                     }
                 }
+                .scrollBounceBehavior(.basedOnSize)
+                .clipped()
+                .contentShape(Rectangle())
             }
             .navigationTitle(insight.type.title)
             .navigationBarTitleDisplayMode(.inline)
@@ -45,7 +110,7 @@ struct InsightDetailView: View {
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Stäng") {
+                    Button("Close") {
                         dismiss()
                     }
                     .foregroundStyle(Color.vitalyTextPrimary)
@@ -125,7 +190,7 @@ struct InsightDetailView: View {
 
     private var contentSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Analys")
+            Text("Analysis")
                 .font(.headline)
                 .foregroundStyle(Color.vitalyTextSecondary)
                 .textCase(.uppercase)
@@ -143,7 +208,7 @@ struct InsightDetailView: View {
 
     private var metricsSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Relaterade mätvärden")
+            Text("Related Metrics")
                 .font(.headline)
                 .foregroundStyle(Color.vitalyTextSecondary)
                 .textCase(.uppercase)
@@ -231,11 +296,26 @@ struct InsightDetailView: View {
         }
     }
 
+    private var typeColor: Color {
+        switch insight.type {
+        case .dailySummary: return .vitalyPrimary
+        case .sleepAnalysis: return .vitalySleep
+        case .activityTrend: return .vitalyActivity
+        case .recoveryAdvice: return .vitalyRecovery
+        case .heartHealth: return .vitalyHeart
+        case .weeklyReport: return .vitalyExcellent
+        }
+    }
+
+    private var isDeepAnalysis: Bool {
+        insight.title.lowercased().contains("deep")
+    }
+
     private var priorityText: String {
         switch insight.priority {
-        case .high: return "Hög prioritet"
+        case .high: return "High priority"
         case .normal: return "Normal"
-        case .low: return "Låg prioritet"
+        case .low: return "Low priority"
         }
     }
 
@@ -243,7 +323,7 @@ struct InsightDetailView: View {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
         formatter.timeStyle = .short
-        formatter.locale = Locale(identifier: "sv_SE")
+        formatter.locale = Locale(identifier: "en_US")
         return formatter.string(from: insight.createdAt)
     }
 
@@ -253,7 +333,7 @@ struct InsightDetailView: View {
 
         \(insight.content)
 
-        Skapad: \(formattedDate)
+        Created: \(formattedDate)
         """
     }
 
@@ -271,10 +351,10 @@ struct InsightDetailView: View {
 
     private func metricName(for metric: String) -> String {
         switch metric {
-        case "sleep": return "Sömn"
-        case "activity": return "Aktivitet"
-        case "heart": return "Hjärta"
-        case "recovery": return "Återhämtning"
+        case "sleep": return "Sleep"
+        case "activity": return "Activity"
+        case "heart": return "Heart"
+        case "recovery": return "Recovery"
         default: return metric.capitalized
         }
     }

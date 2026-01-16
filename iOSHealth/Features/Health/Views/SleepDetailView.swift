@@ -26,8 +26,11 @@ struct SleepDetailView: View {
             }
             .padding()
         }
+        .scrollBounceBehavior(.basedOnSize)
+        .clipped()
+        .contentShape(Rectangle())
         .background(Color.vitalyBackground)
-        .navigationTitle("Sömn")
+        .navigationTitle("Sleep")
         .navigationBarTitleDisplayMode(.large)
     }
 
@@ -43,7 +46,7 @@ struct SleepDetailView: View {
                     .font(.system(size: 48, weight: .bold, design: .rounded))
                     .foregroundColor(.vitalyTextPrimary)
 
-                Text("Total sömn")
+                Text("Total Sleep")
                     .font(.subheadline)
                     .foregroundColor(.vitalyTextSecondary)
             }
@@ -68,14 +71,14 @@ struct SleepDetailView: View {
     private var goalText: String {
         let difference = sleepData.totalHours - 8.0
         if difference >= 0 {
-            return "Mål uppnått"
+            return "Goal reached"
         } else {
             let hours = Int(abs(difference))
             let minutes = Int((abs(difference) - Double(hours)) * 60)
             if hours > 0 {
-                return "\(hours)h \(minutes)m under mål"
+                return "\(hours)h \(minutes)m below goal"
             } else {
-                return "\(minutes)m under mål"
+                return "\(minutes)m below goal"
             }
         }
     }
@@ -102,14 +105,14 @@ struct SleepDetailView: View {
                     Text("\(sleepData.quality.score)")
                         .font(.system(size: 32, weight: .bold, design: .rounded))
                         .foregroundColor(.vitalyTextPrimary)
-                    Text("poäng")
+                    Text("score")
                         .font(.caption2)
                         .foregroundColor(.vitalyTextSecondary)
                 }
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("Sömnkvalitet")
+                Text("Sleep Quality")
                     .font(.headline)
                     .foregroundColor(.vitalyTextPrimary)
 
@@ -145,47 +148,47 @@ struct SleepDetailView: View {
     private var qualityDescription: String {
         switch sleepData.quality {
         case .excellent:
-            return "Utmärkt sömn med optimala djupsömn- och REM-nivåer"
+            return "Excellent sleep with optimal deep sleep and REM levels"
         case .good:
-            return "Bra sömn som främjar återhämtning"
+            return "Good sleep that promotes recovery"
         case .fair:
-            return "Godtagbar sömn, men kan förbättras"
+            return "Acceptable sleep, but could be improved"
         case .poor:
-            return "Sömnkvaliteten behöver förbättras"
+            return "Sleep quality needs improvement"
         }
     }
 
     // MARK: - Sleep Stages Card
     private var sleepStagesCard: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Sömnfaser")
+            Text("Sleep Stages")
                 .font(.headline)
                 .foregroundColor(.vitalyTextPrimary)
 
             VStack(spacing: 12) {
                 sleepStageRow(
-                    name: "Djupsömn",
+                    name: "Deep Sleep",
                     duration: sleepData.deepSleep,
                     color: Color(red: 0.5, green: 0.4, blue: 0.75),
                     icon: "moon.zzz.fill"
                 )
 
                 sleepStageRow(
-                    name: "REM-sömn",
+                    name: "REM Sleep",
                     duration: sleepData.remSleep,
                     color: Color.vitalySleep,
                     icon: "brain.head.profile"
                 )
 
                 sleepStageRow(
-                    name: "Lätt sömn",
+                    name: "Light Sleep",
                     duration: sleepData.lightSleep,
                     color: Color(red: 0.7, green: 0.6, blue: 0.9),
                     icon: "cloud.moon.fill"
                 )
 
                 sleepStageRow(
-                    name: "Vaken",
+                    name: "Awake",
                     duration: sleepData.awake,
                     color: Color.vitalyFair,
                     icon: "eye.fill"

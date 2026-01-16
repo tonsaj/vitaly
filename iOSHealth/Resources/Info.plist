@@ -18,8 +18,21 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.perfectfools.vitaly</string>
+				<string>app-1-1072746045072-ios-451af1d44d197939cb0215</string>
+				<string>com.googleusercontent.apps.1072746045072-u9thgcriuobgqatcf5hi58d0fr0iugbi</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>202601161651</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
@@ -28,6 +41,12 @@
 	<string>Vitaly behöver tillgång till din hälsodata för att visa dina hälsometriker, analysera dina mönster och ge personliga insikter baserade på din sömn, aktivitet och hjärtdata.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Vitaly kan spara beräknade metriker tillbaka till Hälsa-appen för att ge dig en komplett översikt av din hälsa.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Vitaly vill skicka dig dagliga sammanfattningar av din hälsa och personliga påminnelser för att hjälpa dig nå dina hälsomål.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -36,7 +55,7 @@
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
-		<string>VitalyPrimary</string>
+		<string>VitalyBackground</string>
 	</dict>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
@@ -52,18 +71,6 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.perfectfools.vitaly</string>
-				<string>app-1-1072746045072-ios-451af1d44d197939cb0215</string>
-			</array>
-		</dict>
 	</array>
 </dict>
 </plist>

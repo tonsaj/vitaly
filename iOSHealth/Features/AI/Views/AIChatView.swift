@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AIChatView: View {
     @Bindable var viewModel: AIViewModel
-    let healthContext: HealthContext
+    let healthContext: ExtendedHealthContext
 
     @Environment(\.dismiss) private var dismiss
     @FocusState private var isInputFocused: Bool
@@ -27,14 +27,14 @@ struct AIChatView: View {
                     inputArea
                 }
             }
-            .navigationTitle("AI-assistent")
+            .navigationTitle("AI Assistant")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarBackground(Color.vitalyCardBackground, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Stäng") {
+                    Button("Close") {
                         dismiss()
                     }
                     .foregroundStyle(Color.vitalyTextPrimary)
@@ -45,7 +45,7 @@ struct AIChatView: View {
                         Button(role: .destructive) {
                             viewModel.clearChat()
                         } label: {
-                            Label("Rensa chat", systemImage: "trash")
+                            Label("Clear chat", systemImage: "trash")
                         }
                         .disabled(viewModel.chatMessages.isEmpty)
                     } label: {
@@ -81,11 +81,11 @@ struct AIChatView: View {
             }
 
             VStack(spacing: 12) {
-                Text("Hej! Jag är din AI-hälsoassistent")
+                Text("Hi! I'm your AI health assistant")
                     .font(.title2.weight(.bold))
                     .foregroundStyle(Color.vitalyTextPrimary)
 
-                Text("Ställ mig frågor om din hälsodata och få personliga råd.")
+                Text("Ask me questions about your health data and get personalized advice.")
                     .font(.subheadline)
                     .foregroundStyle(Color.vitalyTextSecondary)
                     .multilineTextAlignment(.center)
@@ -114,6 +114,9 @@ struct AIChatView: View {
                 }
                 .padding()
             }
+            .scrollBounceBehavior(.basedOnSize)
+            .clipped()
+            .contentShape(Rectangle())
             .onChange(of: viewModel.chatMessages.count) { _, _ in
                 withAnimation {
                     if let lastMessage = viewModel.chatMessages.last {
@@ -169,7 +172,7 @@ struct AIChatView: View {
 
     private var inputArea: some View {
         HStack(alignment: .bottom, spacing: 12) {
-            TextField("Ställ en fråga...", text: $viewModel.currentMessage, axis: .vertical)
+            TextField("Ask a question...", text: $viewModel.currentMessage, axis: .vertical)
                 .textFieldStyle(.plain)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
@@ -220,11 +223,11 @@ struct AIChatView: View {
         let contextInfo = buildContextInfo()
 
         let welcomeText = """
-        Hej! Jag är här för att hjälpa dig förstå din hälsodata och ge personliga råd.
+        Hi! I'm here to help you understand your health data and provide personalized advice.
 
         \(contextInfo)
 
-        Vad vill du veta mer om?
+        What would you like to know more about?
         """
 
         let welcomeMessage = ChatMessage(
@@ -240,22 +243,34 @@ struct AIChatView: View {
     private func buildContextInfo() -> String {
         var info: [String] = []
 
-        if let sleep = healthContext.sleep {
-            info.append("Sömn: \(sleep.formattedDuration) (\(sleep.quality.displayText))")
+        // Today's data
+        if let sleep = healthContext.todaySleep {
+            info.append("Today's sleep: \(sleep.formattedDuration) (\(sleep.quality.displayText))")
         }
 
-        if let activity = healthContext.activity {
-            info.append("Aktivitet: \(activity.steps) steg")
+        if let activity = healthContext.todayActivity {
+            info.append("Today's steps: \(activity.steps)")
         }
 
-        if let heart = healthContext.heart {
-            info.append("Vilopuls: \(Int(heart.restingHeartRate)) bpm")
+        if let heart = healthContext.todayHeart {
+            info.append("Resting heart rate: \(Int(heart.restingHeartRate)) bpm")
+        }
+
+        // Historical summary
+        if !healthContext.sleepHistory.isEmpty {
+            let avgSleep = healthContext.sleepHistory.reduce(0) { $0 + $1.totalHours } / Double(healthContext.sleepHistory.count)
+            info.append("Sleep avg (30 days): \(String(format: "%.1f", avgSleep)) hours")
+        }
+
+        if !healthContext.activityHistory.isEmpty {
+            let avgSteps = healthContext.activityHistory.reduce(0) { $0 + $1.steps } / healthContext.activityHistory.count
+            info.append("Steps avg (30 days): \(avgSteps)/day")
         }
 
         if info.isEmpty {
-            return "Jag har ingen hälsodata att analysera just nu, men du kan ändå ställa allmänna hälsofrågor."
+            return "I don't have any health data to analyze right now, but you can still ask general health questions."
         } else {
-            return "Din senaste hälsodata:\n" + info.map { "• \($0)" }.joined(separator: "\n")
+            return "I have access to your health data:\n" + info.map { "• \($0)" }.joined(separator: "\n")
         }
     }
 }
@@ -334,20 +349,18 @@ struct MessageBubble: View {
             vm.chatMessages = [
                 ChatMessage(
                     id: "1",
-                    content: "Hej! Hur kan jag förbättra min sömn?",
+                    content: "How can I improve my sleep?",
                     isUser: true,
                     timestamp: Date().addingTimeInterval(-120)
                 ),
                 ChatMessage(
                     id: "2",
                     content: """
-                    Baserat på din sömndata ser jag att du i genomsnitt får 6.5 timmar sömn per natt. \
-                    För optimal återhämtning rekommenderar jag 7-9 timmar.
+                    Based on your sleep data, I see that you average 6.5 hours of sleep per night. \
+                    For optimal recovery, I recommend 7-9 hours.
 
-                    Här är några tips:
-                    • Försök gå och lägg dig vid samma tid varje kväll
-                    • Undvik skärmar minst 1 timme innan läggdags
-                    • Håll sovrummet svalt (16-19°C)
+                    Here are some tips: Try going to bed at the same time every night. \
+                    Avoid screens at least 1 hour before bedtime. Keep the bedroom cool (16-19°C).
                     """,
                     isUser: false,
                     timestamp: Date().addingTimeInterval(-60)
@@ -355,6 +368,13 @@ struct MessageBubble: View {
             ]
             return vm
         }(),
-        healthContext: HealthContext(sleep: nil, activity: nil, heart: nil)
+        healthContext: ExtendedHealthContext(
+            todaySleep: nil,
+            todayActivity: nil,
+            todayHeart: nil,
+            sleepHistory: [],
+            activityHistory: [],
+            heartHistory: []
+        )
     )
 }

@@ -68,11 +68,11 @@ enum HRVStatus: String {
 
     var displayText: String {
         switch self {
-        case .excellent: return "Utmärkt"
-        case .good: return "Bra"
+        case .excellent: return "Excellent"
+        case .good: return "Good"
         case .fair: return "Normal"
-        case .low: return "Låg"
-        case .unknown: return "Okänd"
+        case .low: return "Low"
+        case .unknown: return "Unknown"
         }
     }
 }
@@ -82,11 +82,11 @@ enum RestingHRStatus: String {
 
     var displayText: String {
         switch self {
-        case .athletic: return "Atletisk"
-        case .excellent: return "Utmärkt"
-        case .good: return "Bra"
+        case .athletic: return "Athletic"
+        case .excellent: return "Excellent"
+        case .good: return "Good"
         case .average: return "Normal"
-        case .elevated: return "Förhöjd"
+        case .elevated: return "Elevated"
         }
     }
 }

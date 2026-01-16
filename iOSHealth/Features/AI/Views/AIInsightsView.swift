@@ -4,13 +4,17 @@ struct AIInsightsView: View {
     @State private var viewModel: AIViewModel
     @State private var selectedInsight: AIInsight?
     @State private var showingChat = false
+    @State private var showingDisclaimer = false
+    @AppStorage("hasSeenAIDisclaimer") private var hasSeenAIDisclaimer = false
 
     let userId: String
     let currentHealthData: (SleepData?, ActivityData?, HeartData?)
+    let extendedContext: ExtendedHealthContext?
 
-    init(userId: String, currentHealthData: (SleepData?, ActivityData?, HeartData?)) {
+    init(userId: String, currentHealthData: (SleepData?, ActivityData?, HeartData?), extendedContext: ExtendedHealthContext? = nil) {
         self.userId = userId
         self.currentHealthData = currentHealthData
+        self.extendedContext = extendedContext
         _viewModel = State(initialValue: AIViewModel(userId: userId))
     }
 
@@ -25,18 +29,24 @@ struct AIInsightsView: View {
                         // Header
                         headerSection
 
+                        // Visa alltid snabbåtgärder först
+                        quickActionsSection
+
                         if viewModel.isLoading && viewModel.insights.isEmpty {
                             loadingView
                         } else if viewModel.insights.isEmpty {
-                            emptyStateView
+                            emptyInsightsMessage
                         } else {
-                            insightsContent
+                            insightsListSection
                         }
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 8)
                     .padding(.bottom, 100)
                 }
+                .scrollBounceBehavior(.basedOnSize)
+                .clipped()
+                .contentShape(Rectangle())
                 .refreshable {
                     await viewModel.refreshInsights()
                 }
@@ -48,7 +58,7 @@ struct AIInsightsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("Insikter")
+                    Text("Insights")
                         .font(.headline)
                         .foregroundStyle(Color.vitalyTextPrimary)
                 }
@@ -73,7 +83,7 @@ struct AIInsightsView: View {
                                     )
                                 }
                             } label: {
-                                Label("Daglig sammanfattning", systemImage: "sun.max.fill")
+                                Label("Daily Summary", systemImage: "sun.max.fill")
                             }
                             .disabled(viewModel.isGenerating)
                         } label: {
@@ -95,14 +105,17 @@ struct AIInsightsView: View {
             .sheet(isPresented: $showingChat) {
                 AIChatView(
                     viewModel: viewModel,
-                    healthContext: HealthContext(
-                        sleep: currentHealthData.0,
-                        activity: currentHealthData.1,
-                        heart: currentHealthData.2
+                    healthContext: ExtendedHealthContext(
+                        todaySleep: currentHealthData.0,
+                        todayActivity: currentHealthData.1,
+                        todayHeart: currentHealthData.2,
+                        sleepHistory: currentHealthData.0 != nil ? [currentHealthData.0!] : [],
+                        activityHistory: currentHealthData.1 != nil ? [currentHealthData.1!] : [],
+                        heartHistory: currentHealthData.2 != nil ? [currentHealthData.2!] : []
                     )
                 )
             }
-            .alert("Fel", isPresented: .constant(viewModel.errorMessage != nil)) {
+            .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
                 Button("OK") {
                     viewModel.errorMessage = nil
                 }
@@ -112,7 +125,18 @@ struct AIInsightsView: View {
                 }
             }
             .task {
+                // Set extended context for background data (weight, GLP-1, etc)
+                viewModel.extendedContext = extendedContext
                 await viewModel.loadInsights()
+                // Användaren triggar manuellt insikter via snabbåtgärder
+            }
+            .onAppear {
+                if !hasSeenAIDisclaimer {
+                    showingDisclaimer = true
+                }
+            }
+            .sheet(isPresented: $showingDisclaimer) {
+                AIDisclaimerSheet(hasSeenDisclaimer: $hasSeenAIDisclaimer)
             }
         }
     }
@@ -121,11 +145,11 @@ struct AIInsightsView: View {
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text("AI-insikter")
+                Text("AI Insights")
                     .font(.system(size: 22, weight: .bold, design: .rounded))
                     .foregroundStyle(Color.vitalyTextPrimary)
 
-                Text("Personliga analyser av din hälsa")
+                Text("Personal analyses of your health")
                     .font(.subheadline)
                     .foregroundStyle(Color.vitalyTextSecondary)
             }
@@ -147,19 +171,16 @@ struct AIInsightsView: View {
         .padding(.top, 8)
     }
 
-    // MARK: - Insights Content
-    private var insightsContent: some View {
+    // MARK: - Insights List Section (bara listan)
+    private var insightsListSection: some View {
         VStack(spacing: 16) {
             if viewModel.unreadCount > 0 {
                 unreadBanner
             }
 
-            // Quick Actions
-            quickActionsSection
-
             // Insights List
             VStack(alignment: .leading, spacing: 12) {
-                Text("SENASTE INSIKTER")
+                Text("LATEST INSIGHTS")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(Color.vitalyTextSecondary)
                     .tracking(1.2)
@@ -174,10 +195,25 @@ struct AIInsightsView: View {
         }
     }
 
+    // MARK: - Empty Insights Message (enkel, inte full empty state)
+    private var emptyInsightsMessage: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "sparkles")
+                .font(.system(size: 32))
+                .foregroundStyle(Color.vitalyTextSecondary.opacity(0.5))
+
+            Text("Choose an action above to generate your first AI insight")
+                .font(.subheadline)
+                .foregroundStyle(Color.vitalyTextSecondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding(.vertical, 40)
+    }
+
     // MARK: - Quick Actions
     private var quickActionsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("SNABBÅTGÄRDER")
+            Text("QUICK ACTIONS")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(Color.vitalyTextSecondary)
                 .tracking(1.2)
@@ -189,7 +225,7 @@ struct AIInsightsView: View {
             ], spacing: 12) {
                 QuickActionCard(
                     icon: "sun.max.fill",
-                    title: "Daglig\nsammanfattning",
+                    title: "Daily\nSummary",
                     color: .vitalyPrimary
                 ) {
                     Task {
@@ -202,9 +238,35 @@ struct AIInsightsView: View {
                 }
 
                 QuickActionCard(
-                    icon: "bubble.left.and.bubble.right.fill",
-                    title: "Chatta med\nAI",
+                    icon: "moon.stars.fill",
+                    title: "Sleep\nAnalysis",
                     color: .vitalySleep
+                ) {
+                    Task {
+                        if let sleep = currentHealthData.0 {
+                            await viewModel.generateSleepAnalysis(sleepData: [sleep])
+                        }
+                    }
+                }
+
+                QuickActionCard(
+                    icon: "heart.text.square.fill",
+                    title: "Recovery\nAdvice",
+                    color: .vitalyRecovery
+                ) {
+                    Task {
+                        await viewModel.generateRecoveryAdvice(
+                            sleep: currentHealthData.0,
+                            heart: currentHealthData.2,
+                            recentActivity: currentHealthData.1 != nil ? [currentHealthData.1!] : []
+                        )
+                    }
+                }
+
+                QuickActionCard(
+                    icon: "bubble.left.and.bubble.right.fill",
+                    title: "Chat with\nAI",
+                    color: .vitalyHeart
                 ) {
                     showingChat = true
                 }
@@ -226,11 +288,11 @@ struct AIInsightsView: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("Du har \(viewModel.unreadCount) oläst\(viewModel.unreadCount == 1 ? "" : "a") insikt\(viewModel.unreadCount == 1 ? "" : "er")")
+                Text("You have \(viewModel.unreadCount) unread insight\(viewModel.unreadCount == 1 ? "" : "s")")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Color.vitalyTextPrimary)
 
-                Text("Tryck för att läsa")
+                Text("Tap to read")
                     .font(.caption)
                     .foregroundStyle(Color.vitalyTextSecondary)
             }
@@ -277,11 +339,11 @@ struct AIInsightsView: View {
             }
 
             VStack(spacing: 8) {
-                Text("Inga insikter än")
+                Text("No insights yet")
                     .font(.title2.weight(.bold))
                     .foregroundStyle(Color.vitalyTextPrimary)
 
-                Text("Generera din första AI-insikt för att få personliga hälsoanalyser.")
+                Text("Generate your first AI insight to get personalized health analyses.")
                     .font(.subheadline)
                     .foregroundStyle(Color.vitalyTextSecondary)
                     .multilineTextAlignment(.center)
@@ -299,7 +361,7 @@ struct AIInsightsView: View {
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: "sparkles")
-                    Text("Generera första insikten")
+                    Text("Generate First Insight")
                 }
                 .font(.headline)
                 .foregroundStyle(.white)
@@ -324,7 +386,7 @@ struct AIInsightsView: View {
                 .progressViewStyle(CircularProgressViewStyle(tint: .vitalyPrimary))
                 .scaleEffect(1.2)
 
-            Text("Laddar insikter...")
+            Text("Loading insights...")
                 .font(.subheadline)
                 .foregroundStyle(Color.vitalyTextSecondary)
 
@@ -351,11 +413,11 @@ struct AIInsightsView: View {
                 }
 
                 VStack(spacing: 8) {
-                    Text("Genererar insikt...")
+                    Text("Generating insight...")
                         .font(.headline)
                         .foregroundStyle(Color.vitalyTextPrimary)
 
-                    Text("AI analyserar din hälsodata")
+                    Text("AI is analyzing your health data")
                         .font(.subheadline)
                         .foregroundStyle(Color.vitalyTextSecondary)
                 }
@@ -496,9 +558,175 @@ struct InsightRow: View {
 
     private var formattedDate: String {
         let formatter = RelativeDateTimeFormatter()
-        formatter.locale = Locale(identifier: "sv_SE")
+        formatter.locale = Locale(identifier: "en_US")
         formatter.unitsStyle = .short
         return formatter.localizedString(for: insight.createdAt, relativeTo: Date())
+    }
+}
+
+// MARK: - AI Disclaimer Sheet
+struct AIDisclaimerSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Binding var hasSeenDisclaimer: Bool
+    @State private var isAccepted = false
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.vitalyBackground.ignoresSafeArea()
+
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 24) {
+                        // Header
+                        VStack(spacing: 16) {
+                            ZStack {
+                                Circle()
+                                    .fill(LinearGradient.vitalyGradient)
+                                    .frame(width: 80, height: 80)
+
+                                Image(systemName: "sparkles")
+                                    .font(.system(size: 36))
+                                    .foregroundStyle(.white)
+                            }
+
+                            VStack(spacing: 8) {
+                                Text("Before You Begin")
+                                    .font(.title2.weight(.bold))
+                                    .foregroundStyle(Color.vitalyTextPrimary)
+
+                                Text("Important information about AI insights")
+                                    .font(.subheadline)
+                                    .foregroundStyle(Color.vitalyTextSecondary)
+                            }
+                        }
+                        .padding(.top, 20)
+
+                        // Info Cards
+                        VStack(spacing: 16) {
+                            AIDisclaimerCard(
+                                icon: "brain.head.profile",
+                                title: "AI-Generated Content",
+                                description: "All insights and recommendations are generated by artificial intelligence and may contain inaccuracies.",
+                                color: Color.vitalyPrimary
+                            )
+
+                            AIDisclaimerCard(
+                                icon: "stethoscope",
+                                title: "Not Medical Advice",
+                                description: "This information is for educational purposes only and should not replace professional medical consultation.",
+                                color: Color.vitalyHeart
+                            )
+
+                            AIDisclaimerCard(
+                                icon: "person.fill.checkmark",
+                                title: "Consult Your Doctor",
+                                description: "Always consult a qualified healthcare provider before making health decisions based on AI suggestions.",
+                                color: Color.vitalySleep
+                            )
+                        }
+                        .padding(.horizontal, 16)
+
+                        // Acceptance Toggle
+                        Button {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                isAccepted.toggle()
+                            }
+                        } label: {
+                            HStack(spacing: 14) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .stroke(isAccepted ? Color.vitalyExcellent : Color.vitalyTextSecondary, lineWidth: 2)
+                                        .frame(width: 24, height: 24)
+
+                                    if isAccepted {
+                                        RoundedRectangle(cornerRadius: 4)
+                                            .fill(Color.vitalyExcellent)
+                                            .frame(width: 18, height: 18)
+
+                                        Image(systemName: "checkmark")
+                                            .font(.system(size: 12, weight: .bold))
+                                            .foregroundStyle(.white)
+                                    }
+                                }
+
+                                Text("I understand that AI insights are not medical advice")
+                                    .font(.subheadline)
+                                    .foregroundStyle(Color.vitalyTextPrimary)
+                                    .multilineTextAlignment(.leading)
+
+                                Spacer()
+                            }
+                            .padding(16)
+                            .background(Color.vitalyCardBackground)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 16)
+
+                        // Continue Button
+                        Button {
+                            hasSeenDisclaimer = true
+                            dismiss()
+                        } label: {
+                            Text("Continue")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 56)
+                                .background(isAccepted ? LinearGradient.vitalyGradient : LinearGradient(colors: [Color.vitalySurface], startPoint: .leading, endPoint: .trailing))
+                                .foregroundStyle(isAccepted ? .white : Color.vitalyTextSecondary)
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
+                        }
+                        .disabled(!isAccepted)
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 40)
+                    }
+                }
+                .scrollBounceBehavior(.basedOnSize)
+                .clipped()
+                .contentShape(Rectangle())
+            }
+            .navigationTitle("AI Insights")
+            .navigationBarTitleDisplayMode(.inline)
+            .interactiveDismissDisabled(!hasSeenDisclaimer)
+        }
+    }
+}
+
+// MARK: - AI Disclaimer Card
+struct AIDisclaimerCard: View {
+    let icon: String
+    let title: String
+    let description: String
+    let color: Color
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(color.opacity(0.15))
+                    .frame(width: 44, height: 44)
+
+                Image(systemName: icon)
+                    .font(.system(size: 20))
+                    .foregroundStyle(color)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Color.vitalyTextPrimary)
+
+                Text(description)
+                    .font(.caption)
+                    .foregroundStyle(Color.vitalyTextSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(16)
+        .background(Color.vitalyCardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }
 

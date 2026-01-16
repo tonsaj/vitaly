@@ -47,10 +47,10 @@ enum SleepQuality: String, Codable {
 
     var displayText: String {
         switch self {
-        case .excellent: return "Utmärkt"
-        case .good: return "Bra"
-        case .fair: return "Okej"
-        case .poor: return "Dålig"
+        case .excellent: return "Excellent"
+        case .good: return "Good"
+        case .fair: return "Fair"
+        case .poor: return "Poor"
         }
     }
 

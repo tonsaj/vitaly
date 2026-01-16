@@ -26,8 +26,11 @@ struct HeartRateView: View {
             }
             .padding()
         }
+        .scrollBounceBehavior(.basedOnSize)
+        .clipped()
+        .contentShape(Rectangle())
         .background(Color.vitalyBackground)
-        .navigationTitle("Hjärta")
+        .navigationTitle("Heart")
         .navigationBarTitleDisplayMode(.large)
     }
 

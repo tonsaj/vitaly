@@ -3,7 +3,14 @@ import SwiftUI
 struct SleepDetailEnhancedView: View {
     @Environment(\.dismiss) private var dismiss
     let sleepData: SleepData?
+    let yesterdaySleep: SleepData?
+    let weeklyAverageSleep: Double?
+    let sleepGoal: Double
+
     @State private var animateChart = false
+    @State private var aiInsight: String?
+    @State private var isLoadingAI = false
+    @State private var hasLoadedAI = false
 
     private var sleepPercentage: Double {
         guard let sleep = sleepData else { return 0 }
@@ -28,6 +35,9 @@ struct SleepDetailEnhancedView: View {
                     // Large Ring Gauge
                     largeSleepRing
 
+                    // AI Insight Card
+                    aiInsightCard
+
                     // Sleep Times Card
                     sleepTimesCard
 
@@ -48,7 +58,7 @@ struct SleepDetailEnhancedView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text("Sömn")
+                Text("Sleep")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(Color.vitalyTextPrimary)
             }
@@ -90,6 +100,85 @@ struct SleepDetailEnhancedView: View {
                 animateChart = true
             }
         }
+        .task {
+            await loadAIInsight()
+        }
+    }
+
+    // MARK: - AI Insight Card
+    private var aiInsightCard: some View {
+        VitalyCard {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 8) {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color.vitalySleep)
+
+                    Text("AI SÖMNANALYS")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(Color.vitalyTextSecondary)
+                        .tracking(1.2)
+
+                    Spacer()
+
+                    if isLoadingAI {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .vitalySleep))
+                            .scaleEffect(0.7)
+                    }
+                }
+
+                if isLoadingAI {
+                    Text("Analyserar din sömn...")
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color.vitalyTextSecondary)
+                } else if let insight = aiInsight {
+                    Text(insight)
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(Color.vitalyTextPrimary)
+                        .lineSpacing(5)
+                } else {
+                    Text(fallbackInsight)
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(Color.vitalyTextPrimary)
+                        .lineSpacing(5)
+                }
+            }
+            .padding(18)
+        }
+    }
+
+    private var fallbackInsight: String {
+        guard let sleep = sleepData else {
+            return "Ingen sömndata tillgänglig för analys."
+        }
+        if sleep.totalHours >= 7.5 {
+            return "Bra sovit! Du har fått tillräckligt med vila för optimal återhämtning."
+        } else if sleep.totalHours >= 6 {
+            return "Godkänd sömn, men försök sova lite längre för bästa återhämtning."
+        } else {
+            return "Din sömn var kortare än rekommenderat. Prioritera vila ikväll."
+        }
+    }
+
+    @MainActor
+    private func loadAIInsight() async {
+        guard let sleep = sleepData, !hasLoadedAI else { return }
+        hasLoadedAI = true
+        isLoadingAI = true
+
+        do {
+            // Use detailed sleep insight with REM, deep sleep data
+            aiInsight = try await GeminiService.shared.generateSleepInsight(
+                sleepData: sleep,
+                yesterdaySleep: yesterdaySleep,
+                weeklyAverageSleep: weeklyAverageSleep,
+                goal: sleepGoal
+            )
+        } catch {
+            aiInsight = nil
+        }
+        isLoadingAI = false
     }
 
     // MARK: - Large Sleep Ring
@@ -528,7 +617,7 @@ struct SleepTimelineVisualization: View {
 
 #Preview {
     NavigationStack {
-        SleepDetailView(
+        SleepDetailEnhancedView(
             sleepData: SleepData(
                 id: "1",
                 date: Date(),
@@ -540,7 +629,19 @@ struct SleepTimelineVisualization: View {
                 bedtime: Date().addingTimeInterval(-8 * 3600),
                 wakeTime: Date()
             ),
-            historicalData: []
+            yesterdaySleep: SleepData(
+                id: "2",
+                date: Date().addingTimeInterval(-86400),
+                totalDuration: 6.5 * 3600,
+                deepSleep: 1.2 * 3600,
+                remSleep: 1.5 * 3600,
+                lightSleep: 3.5 * 3600,
+                awake: 0.3 * 3600,
+                bedtime: Date().addingTimeInterval(-86400 - 7 * 3600),
+                wakeTime: Date().addingTimeInterval(-86400)
+            ),
+            weeklyAverageSleep: 7.2,
+            sleepGoal: 8.0
         )
     }
     .preferredColorScheme(.dark)

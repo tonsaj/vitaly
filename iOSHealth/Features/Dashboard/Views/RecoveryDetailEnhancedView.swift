@@ -5,7 +5,12 @@ struct RecoveryDetailEnhancedView: View {
     let recoveryScore: Double
     let sleepData: SleepData?
     let heartData: HeartData?
+    let hrvHistory: [Double]
+
     @State private var animateRing = false
+    @State private var aiInsight: String?
+    @State private var isLoadingAI = false
+    @State private var hasLoadedAI = false
 
     var body: some View {
         ZStack {
@@ -25,6 +30,9 @@ struct RecoveryDetailEnhancedView: View {
                     // Large Ring Gauge
                     largeRecoveryRing
 
+                    // AI Insight Card
+                    aiInsightCard
+
                     // Recovery Breakdown
                     recoveryBreakdown
 
@@ -42,7 +50,7 @@ struct RecoveryDetailEnhancedView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text("Återhämtning")
+                Text("Recovery")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(Color.vitalyTextPrimary)
             }
@@ -84,6 +92,85 @@ struct RecoveryDetailEnhancedView: View {
                 animateRing = true
             }
         }
+        .task {
+            await loadAIInsight()
+        }
+    }
+
+    // MARK: - AI Insight Card
+    private var aiInsightCard: some View {
+        VitalyCard {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 8) {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color.vitalyRecovery)
+
+                    Text("AI ÅTERHÄMTNINGSANALYS")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(Color.vitalyTextSecondary)
+                        .tracking(1.2)
+
+                    Spacer()
+
+                    if isLoadingAI {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .vitalyRecovery))
+                            .scaleEffect(0.7)
+                    }
+                }
+
+                if isLoadingAI {
+                    Text("Analyserar din återhämtning...")
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color.vitalyTextSecondary)
+                } else if let insight = aiInsight {
+                    Text(insight)
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(Color.vitalyTextPrimary)
+                        .lineSpacing(5)
+                } else {
+                    Text(fallbackInsight)
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(Color.vitalyTextPrimary)
+                        .lineSpacing(5)
+                }
+            }
+            .padding(18)
+        }
+    }
+
+    private var fallbackInsight: String {
+        if recoveryScore >= 80 {
+            return "Din återhämtning är utmärkt! Du är redo för en intensiv träningsdag."
+        } else if recoveryScore >= 60 {
+            return "God återhämtning. Du kan träna som vanligt, men lyssna på kroppen."
+        } else if recoveryScore >= 40 {
+            return "Måttlig återhämtning. Överväg att ta det lite lugnare idag."
+        } else {
+            return "Din kropp behöver mer vila. Prioritera sömn och återhämtning."
+        }
+    }
+
+    @MainActor
+    private func loadAIInsight() async {
+        guard !hasLoadedAI else { return }
+        hasLoadedAI = true
+        isLoadingAI = true
+
+        do {
+            aiInsight = try await GeminiService.shared.generateMetricInsight(
+                metric: .heart,
+                todayValue: heartData?.hrv ?? recoveryScore,
+                yesterdayValue: hrvHistory.count > 1 ? hrvHistory[hrvHistory.count - 2] : nil,
+                weeklyAverage: hrvHistory.isEmpty ? nil : hrvHistory.reduce(0, +) / Double(hrvHistory.count),
+                goal: 50, // Gott HRV-mål
+                unit: "ms"
+            )
+        } catch {
+            aiInsight = nil
+        }
+        isLoadingAI = false
     }
 
     // MARK: - Large Recovery Ring
@@ -120,7 +207,7 @@ struct RecoveryDetailEnhancedView: View {
                         .font(.system(size: 72, weight: .bold, design: .rounded))
                         .foregroundStyle(Color.vitalyTextPrimary)
 
-                    Text("Återhämtning")
+                    Text("Recovery")
                         .font(.system(size: 16, weight: .medium))
                         .foregroundStyle(Color.vitalyTextSecondary)
                 }
@@ -212,7 +299,7 @@ struct RecoveryDetailEnhancedView: View {
 
                 // Mini line chart
                 MiniLineChart(
-                    data: [45, 52, 48, 55, 58, 54, heartData?.hrv ?? 56],
+                    data: hrvHistory.isEmpty ? [heartData?.hrv ?? 50] : hrvHistory,
                     color: Color.vitalyRecovery
                 )
                 .frame(height: 100)
@@ -235,7 +322,7 @@ struct RecoveryDetailEnhancedView: View {
                             .font(.caption)
                             .foregroundStyle(Color.vitalyTextSecondary)
 
-                        Text("52 ms")
+                        Text(hrvAverageText)
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(Color.vitalyTextPrimary)
                     }
@@ -321,6 +408,13 @@ struct RecoveryDetailEnhancedView: View {
         } else {
             return max(50, 80 - (rhr - 70) * 2)
         }
+    }
+
+    private var hrvAverageText: String {
+        let validHRV = hrvHistory.filter { $0 > 0 }
+        guard !validHRV.isEmpty else { return "-- ms" }
+        let avg = validHRV.reduce(0, +) / Double(validHRV.count)
+        return String(format: "%.0f ms", avg)
     }
 }
 
@@ -511,7 +605,8 @@ struct MiniLineChart: View {
                 minHeartRate: 52,
                 hrv: 56,
                 heartRateZones: []
-            )
+            ),
+            hrvHistory: [45, 52, 48, 55, 58, 54, 56]
         )
     }
     .preferredColorScheme(.dark)

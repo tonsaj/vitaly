@@ -1,0 +1,582 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-01-13",
+  "metrics": {
+    "sleep": {
+      "name": "Sleep",
+      "unit": "hours",
+      "description": "Total sleep time per night",
+      "higherIsBetter": true,
+      "ranges": [
+        {
+          "level": "veryPoor",
+          "min": 0,
+          "max": 4,
+          "label": "Very Poor",
+          "color": "#E53935",
+          "comment": "Severe sleep deprivation. Your body and brain need rest urgently."
+        },
+        {
+          "level": "poor",
+          "min": 4,
+          "max": 5.5,
+          "label": "Poor",
+          "color": "#FB8C00",
+          "comment": "Insufficient sleep. You risk impaired concentration and immune function."
+        },
+        {
+          "level": "fair",
+          "min": 5.5,
+          "max": 7,
+          "label": "Fair",
+          "color": "#FDD835",
+          "comment": "Slightly below recommended. Try to sleep a bit longer."
+        },
+        {
+          "level": "good",
+          "min": 7,
+          "max": 8.5,
+          "label": "Good",
+          "color": "#7CB342",
+          "comment": "Optimal sleep duration for most adults."
+        },
+        {
+          "level": "excellent",
+          "min": 8.5,
+          "max": 24,
+          "label": "Excellent",
+          "color": "#43A047",
+          "comment": "Excellent! Your body is getting the rest it needs."
+        }
+      ]
+    },
+    "steps": {
+      "name": "Steps",
+      "unit": "steps",
+      "description": "Daily step count",
+      "higherIsBetter": true,
+      "ranges": [
+        {
+          "level": "veryPoor",
+          "min": 0,
+          "max": 2000,
+          "label": "Very Poor",
+          "color": "#E53935",
+          "comment": "Sedentary lifestyle. Try to move more during the day."
+        },
+        {
+          "level": "poor",
+          "min": 2000,
+          "max": 5000,
+          "label": "Poor",
+          "color": "#FB8C00",
+          "comment": "Low activity. Take the stairs instead of the elevator."
+        },
+        {
+          "level": "fair",
+          "min": 5000,
+          "max": 7500,
+          "label": "Fair",
+          "color": "#FDD835",
+          "comment": "Moderate activity. You're on the right track!"
+        },
+        {
+          "level": "good",
+          "min": 7500,
+          "max": 10000,
+          "label": "Good",
+          "color": "#7CB342",
+          "comment": "Good activity level. Keeping you healthy and active."
+        },
+        {
+          "level": "excellent",
+          "min": 10000,
+          "max": 100000,
+          "label": "Excellent",
+          "color": "#43A047",
+          "comment": "Excellent! You're exceeding the recommendations."
+        }
+      ]
+    },
+    "restingHeartRate": {
+      "name": "Resting Heart Rate",
+      "unit": "bpm",
+      "description": "Heart rate at rest",
+      "higherIsBetter": false,
+      "ranges": [
+        {
+          "level": "excellent",
+          "min": 0,
+          "max": 50,
+          "label": "Excellent",
+          "color": "#43A047",
+          "comment": "Athletic level! Your heart is very efficient."
+        },
+        {
+          "level": "good",
+          "min": 50,
+          "max": 60,
+          "label": "Good",
+          "color": "#7CB342",
+          "comment": "Good cardiovascular health. Keep exercising!"
+        },
+        {
+          "level": "fair",
+          "min": 60,
+          "max": 70,
+          "label": "Fair",
+          "color": "#FDD835",
+          "comment": "Normal resting heart rate. Regular exercise can lower it."
+        },
+        {
+          "level": "poor",
+          "min": 70,
+          "max": 80,
+          "label": "Poor",
+          "color": "#FB8C00",
+          "comment": "Slightly elevated. Consider more cardio training."
+        },
+        {
+          "level": "veryPoor",
+          "min": 80,
+          "max": 200,
+          "label": "Very Poor",
+          "color": "#E53935",
+          "comment": "High resting heart rate. Consult a doctor if this persists."
+        }
+      ]
+    },
+    "hrv": {
+      "name": "Heart Rate Variability",
+      "unit": "ms",
+      "description": "Variation in time between heartbeats",
+      "higherIsBetter": true,
+      "ranges": [
+        {
+          "level": "veryPoor",
+          "min": 0,
+          "max": 20,
+          "label": "Very Poor",
+          "color": "#E53935",
+          "comment": "Very low HRV. Your body may be stressed or overtrained."
+        },
+        {
+          "level": "poor",
+          "min": 20,
+          "max": 35,
+          "label": "Poor",
+          "color": "#FB8C00",
+          "comment": "Low HRV. Prioritize recovery and stress management."
+        },
+        {
+          "level": "fair",
+          "min": 35,
+          "max": 50,
+          "label": "Fair",
+          "color": "#FDD835",
+          "comment": "Average HRV. There's room for improvement."
+        },
+        {
+          "level": "good",
+          "min": 50,
+          "max": 70,
+          "label": "Good",
+          "color": "#7CB342",
+          "comment": "Good balance between stress and recovery."
+        },
+        {
+          "level": "excellent",
+          "min": 70,
+          "max": 200,
+          "label": "Excellent",
+          "color": "#43A047",
+          "comment": "Excellent HRV! Your body handles stress well."
+        }
+      ]
+    },
+    "respiratoryRate": {
+      "name": "Respiratory Rate",
+      "unit": "rpm",
+      "description": "Breaths per minute at rest",
+      "higherIsBetter": false,
+      "ranges": [
+        {
+          "level": "excellent",
+          "min": 0,
+          "max": 12,
+          "label": "Excellent",
+          "color": "#43A047",
+          "comment": "Calm and controlled breathing. Sign of good fitness."
+        },
+        {
+          "level": "good",
+          "min": 12,
+          "max": 14,
+          "label": "Good",
+          "color": "#7CB342",
+          "comment": "Normal respiratory rate for adults at rest."
+        },
+        {
+          "level": "fair",
+          "min": 14,
+          "max": 18,
+          "label": "Fair",
+          "color": "#FDD835",
+          "comment": "Within normal range. Try deep breathing to lower it."
+        },
+        {
+          "level": "poor",
+          "min": 18,
+          "max": 22,
+          "label": "Poor",
+          "color": "#FB8C00",
+          "comment": "Slightly elevated. May indicate stress or illness."
+        },
+        {
+          "level": "veryPoor",
+          "min": 22,
+          "max": 60,
+          "label": "Very Poor",
+          "color": "#E53935",
+          "comment": "High respiratory rate. Seek medical attention if persistent."
+        }
+      ]
+    },
+    "oxygenSaturation": {
+      "name": "Oxygen Saturation",
+      "unit": "%",
+      "description": "Blood oxygen level",
+      "higherIsBetter": true,
+      "ranges": [
+        {
+          "level": "veryPoor",
+          "min": 0,
+          "max": 90,
+          "label": "Very Poor",
+          "color": "#E53935",
+          "comment": "Critically low! Seek immediate medical attention."
+        },
+        {
+          "level": "poor",
+          "min": 90,
+          "max": 94,
+          "label": "Poor",
+          "color": "#FB8C00",
+          "comment": "Low oxygen saturation. Contact a doctor."
+        },
+        {
+          "level": "fair",
+          "min": 94,
+          "max": 96,
+          "label": "Fair",
+          "color": "#FDD835",
+          "comment": "Slightly below optimal. Monitor the trend."
+        },
+        {
+          "level": "good",
+          "min": 96,
+          "max": 98,
+          "label": "Good",
+          "color": "#7CB342",
+          "comment": "Normal oxygen saturation. Everything looks good."
+        },
+        {
+          "level": "excellent",
+          "min": 98,
+          "max": 100,
+          "label": "Excellent",
+          "color": "#43A047",
+          "comment": "Optimal oxygen saturation! Excellent lung function."
+        }
+      ]
+    },
+    "vo2Max": {
+      "name": "VO2 Max",
+      "unit": "ml/kg/min",
+      "description": "Maximum oxygen uptake",
+      "higherIsBetter": true,
+      "ranges": [
+        {
+          "level": "veryPoor",
+          "min": 0,
+          "max": 25,
+          "label": "Very Poor",
+          "color": "#E53935",
+          "comment": "Low fitness. Start with light exercise and build up gradually."
+        },
+        {
+          "level": "poor",
+          "min": 25,
+          "max": 35,
+          "label": "Poor",
+          "color": "#FB8C00",
+          "comment": "Below average. Regular exercise is needed."
+        },
+        {
+          "level": "fair",
+          "min": 35,
+          "max": 42,
+          "label": "Fair",
+          "color": "#FDD835",
+          "comment": "Average fitness level for adults."
+        },
+        {
+          "level": "good",
+          "min": 42,
+          "max": 52,
+          "label": "Good",
+          "color": "#7CB342",
+          "comment": "Good fitness! You exercise regularly."
+        },
+        {
+          "level": "excellent",
+          "min": 52,
+          "max": 100,
+          "label": "Excellent",
+          "color": "#43A047",
+          "comment": "Athletic level! Excellent cardiovascular capacity."
+        }
+      ]
+    },
+    "bodyFatPercentage": {
+      "name": "Body Fat",
+      "unit": "%",
+      "description": "Body fat percentage (varies by gender)",
+      "higherIsBetter": false,
+      "ranges": [
+        {
+          "level": "excellent",
+          "min": 0,
+          "max": 15,
+          "label": "Excellent",
+          "color": "#43A047",
+          "comment": "Athletic level. Low fat mass and good muscle definition."
+        },
+        {
+          "level": "good",
+          "min": 15,
+          "max": 20,
+          "label": "Good",
+          "color": "#7CB342",
+          "comment": "Healthy level. Good balance between fat and muscle."
+        },
+        {
+          "level": "fair",
+          "min": 20,
+          "max": 25,
+          "label": "Fair",
+          "color": "#FDD835",
+          "comment": "Average. Room for improvement."
+        },
+        {
+          "level": "poor",
+          "min": 25,
+          "max": 32,
+          "label": "Poor",
+          "color": "#FB8C00",
+          "comment": "Slightly elevated. Focus on diet and exercise."
+        },
+        {
+          "level": "veryPoor",
+          "min": 32,
+          "max": 100,
+          "label": "Very Poor",
+          "color": "#E53935",
+          "comment": "High body fat percentage. Risk of health issues."
+        }
+      ]
+    },
+    "activeCalories": {
+      "name": "Active Calories",
+      "unit": "kcal",
+      "description": "Calories burned through activity",
+      "higherIsBetter": true,
+      "ranges": [
+        {
+          "level": "veryPoor",
+          "min": 0,
+          "max": 100,
+          "label": "Very Poor",
+          "color": "#E53935",
+          "comment": "Minimal activity. Try to move more during the day."
+        },
+        {
+          "level": "poor",
+          "min": 100,
+          "max": 200,
+          "label": "Poor",
+          "color": "#FB8C00",
+          "comment": "Low activity. Add a short walk to your day."
+        },
+        {
+          "level": "fair",
+          "min": 200,
+          "max": 350,
+          "label": "Fair",
+          "color": "#FDD835",
+          "comment": "Moderate activity. You're on the right track."
+        },
+        {
+          "level": "good",
+          "min": 350,
+          "max": 500,
+          "label": "Good",
+          "color": "#7CB342",
+          "comment": "Good activity level. Keep it up!"
+        },
+        {
+          "level": "excellent",
+          "min": 500,
+          "max": 5000,
+          "label": "Excellent",
+          "color": "#43A047",
+          "comment": "Excellent! You're very active today."
+        }
+      ]
+    },
+    "exerciseMinutes": {
+      "name": "Exercise Minutes",
+      "unit": "min",
+      "description": "Minutes of moderate to high intensity exercise",
+      "higherIsBetter": true,
+      "ranges": [
+        {
+          "level": "veryPoor",
+          "min": 0,
+          "max": 5,
+          "label": "Very Poor",
+          "color": "#E53935",
+          "comment": "Almost no exercise. Your body needs movement."
+        },
+        {
+          "level": "poor",
+          "min": 5,
+          "max": 15,
+          "label": "Poor",
+          "color": "#FB8C00",
+          "comment": "Little exercise. Aim for at least 30 minutes daily."
+        },
+        {
+          "level": "fair",
+          "min": 15,
+          "max": 30,
+          "label": "Fair",
+          "color": "#FDD835",
+          "comment": "Halfway to the daily goal. Keep moving!"
+        },
+        {
+          "level": "good",
+          "min": 30,
+          "max": 60,
+          "label": "Good",
+          "color": "#7CB342",
+          "comment": "You're meeting WHO recommendations. Well done!"
+        },
+        {
+          "level": "excellent",
+          "min": 60,
+          "max": 500,
+          "label": "Excellent",
+          "color": "#43A047",
+          "comment": "Impressive! You exercise more than most people."
+        }
+      ]
+    },
+    "deepSleepPercentage": {
+      "name": "Deep Sleep",
+      "unit": "%",
+      "description": "Percentage of deep sleep",
+      "higherIsBetter": true,
+      "ranges": [
+        {
+          "level": "veryPoor",
+          "min": 0,
+          "max": 5,
+          "label": "Very Poor",
+          "color": "#E53935",
+          "comment": "Very little deep sleep. Your body can't recover properly."
+        },
+        {
+          "level": "poor",
+          "min": 5,
+          "max": 10,
+          "label": "Poor",
+          "color": "#FB8C00",
+          "comment": "Insufficient deep sleep. Avoid alcohol and screens."
+        },
+        {
+          "level": "fair",
+          "min": 10,
+          "max": 15,
+          "label": "Fair",
+          "color": "#FDD835",
+          "comment": "Slightly below optimal. Improve your sleep hygiene."
+        },
+        {
+          "level": "good",
+          "min": 15,
+          "max": 20,
+          "label": "Good",
+          "color": "#7CB342",
+          "comment": "Good amount of deep sleep for physical recovery."
+        },
+        {
+          "level": "excellent",
+          "min": 20,
+          "max": 100,
+          "label": "Excellent",
+          "color": "#43A047",
+          "comment": "Excellent deep sleep! Optimal for muscle recovery."
+        }
+      ]
+    },
+    "remSleepPercentage": {
+      "name": "REM Sleep",
+      "unit": "%",
+      "description": "Percentage of REM sleep",
+      "higherIsBetter": true,
+      "ranges": [
+        {
+          "level": "veryPoor",
+          "min": 0,
+          "max": 10,
+          "label": "Very Poor",
+          "color": "#E53935",
+          "comment": "Very little REM sleep. Affects memory and learning."
+        },
+        {
+          "level": "poor",
+          "min": 10,
+          "max": 15,
+          "label": "Poor",
+          "color": "#FB8C00",
+          "comment": "Low REM percentage. Try sleeping longer periods."
+        },
+        {
+          "level": "fair",
+          "min": 15,
+          "max": 20,
+          "label": "Fair",
+          "color": "#FDD835",
+          "comment": "Acceptable level. REM increases towards morning."
+        },
+        {
+          "level": "good",
+          "min": 20,
+          "max": 25,
+          "label": "Good",
+          "color": "#7CB342",
+          "comment": "Good REM sleep for cognitive recovery."
+        },
+        {
+          "level": "excellent",
+          "min": 25,
+          "max": 100,
+          "label": "Excellent",
+          "color": "#43A047",
+          "comment": "Excellent! Optimal for memory and creativity."
+        }
+      ]
+    }
+  }
+}

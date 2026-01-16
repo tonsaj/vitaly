@@ -77,7 +77,7 @@ class HealthViewModel {
             } else {
                 status = .negative
             }
-            factors.append(("Sömn", sleep.formattedDuration, status))
+            factors.append(("Sleep", sleep.formattedDuration, status))
         }
 
         // HRV factor
@@ -112,7 +112,7 @@ class HealthViewModel {
         if let activity = activityData {
             let strain = activity.activityScore
             let status: RecoveryFactorStatus = strain > 80 ? .negative : strain > 50 ? .neutral : .positive
-            factors.append(("Belastning", "\(strain)%", status))
+            factors.append(("Strain", "\(strain)%", status))
         }
 
         return factors
@@ -260,9 +260,9 @@ enum RecoveryStatus {
     var displayText: String {
         switch self {
         case .optimal: return "Optimal"
-        case .good: return "Bra"
-        case .fair: return "Måttlig"
-        case .needsRest: return "Behöver vila"
+        case .good: return "Good"
+        case .fair: return "Fair"
+        case .needsRest: return "Needs Rest"
         }
     }
 

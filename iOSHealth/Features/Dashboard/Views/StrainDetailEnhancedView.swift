@@ -3,8 +3,15 @@ import SwiftUI
 struct StrainDetailEnhancedView: View {
     @Environment(\.dismiss) private var dismiss
     let activityData: ActivityData?
+    let yesterdaySteps: Int?
+    let weeklyAverageSteps: Int?
+    let stepsGoal: Int
+
     @State private var animateRing = false
     @State private var showInsightExpanded = false
+    @State private var aiInsight: String?
+    @State private var isLoadingAI = false
+    @State private var hasLoadedAI = false
 
     private var strainPercentage: Double {
         guard let activity = activityData else { return 0 }
@@ -48,7 +55,7 @@ struct StrainDetailEnhancedView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text("Belastning")
+                Text("Strain")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(Color.vitalyTextPrimary)
             }
@@ -90,6 +97,30 @@ struct StrainDetailEnhancedView: View {
                 animateRing = true
             }
         }
+        .task {
+            await loadAIInsight()
+        }
+    }
+
+    @MainActor
+    private func loadAIInsight() async {
+        guard let activity = activityData, !hasLoadedAI else { return }
+        hasLoadedAI = true
+        isLoadingAI = true
+
+        do {
+            aiInsight = try await GeminiService.shared.generateMetricInsight(
+                metric: .activity,
+                todayValue: Double(activity.steps),
+                yesterdayValue: yesterdaySteps != nil ? Double(yesterdaySteps!) : nil,
+                weeklyAverage: weeklyAverageSteps != nil ? Double(weeklyAverageSteps!) : nil,
+                goal: Double(stepsGoal),
+                unit: "steps"
+            )
+        } catch {
+            aiInsight = nil
+        }
+        isLoadingAI = false
     }
 
     // MARK: - Large Ring Gauge
@@ -126,7 +157,7 @@ struct StrainDetailEnhancedView: View {
                         .font(.system(size: 72, weight: .bold, design: .rounded))
                         .foregroundStyle(Color.vitalyTextPrimary)
 
-                    Text("Belastning")
+                    Text("Strain")
                         .font(.system(size: 16, weight: .medium))
                         .foregroundStyle(Color.vitalyTextSecondary)
                 }
@@ -184,7 +215,7 @@ struct StrainDetailEnhancedView: View {
                     HStack(spacing: 8) {
                         Image(systemName: "sparkles")
                             .font(.system(size: 14))
-                            .foregroundStyle(Color.vitalyPrimary)
+                            .foregroundStyle(Color.vitalyActivity)
 
                         Text("AI COACHING")
                             .font(.caption.weight(.bold))
@@ -194,44 +225,57 @@ struct StrainDetailEnhancedView: View {
 
                     Spacer()
 
-                    Button {
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                            showInsightExpanded.toggle()
+                    if isLoadingAI {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .vitalyActivity))
+                            .scaleEffect(0.7)
+                    } else {
+                        Button {
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                showInsightExpanded.toggle()
+                            }
+                        } label: {
+                            Image(systemName: showInsightExpanded ? "chevron.up" : "chevron.down")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(Color.vitalyTextSecondary)
                         }
-                    } label: {
-                        Image(systemName: showInsightExpanded ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(Color.vitalyTextSecondary)
                     }
                 }
 
-                Text(aiInsightText)
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(Color.vitalyTextPrimary)
-                    .lineSpacing(6)
-                    .lineLimit(showInsightExpanded ? nil : 3)
+                if isLoadingAI {
+                    Text("Analyserar din aktivitet...")
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color.vitalyTextSecondary)
+                } else {
+                    Text(aiInsight ?? aiInsightText)
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(Color.vitalyTextPrimary)
+                        .lineSpacing(6)
+                        .lineLimit(showInsightExpanded ? nil : 3)
+                }
 
-                if showInsightExpanded {
+                if showInsightExpanded && !isLoadingAI {
                     VStack(spacing: 12) {
                         Divider()
                             .background(Color.vitalySurface)
 
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Rekommendation")
+                                Text("Mål")
                                     .font(.caption.weight(.semibold))
                                     .foregroundStyle(Color.vitalyTextSecondary)
 
-                                Text("Ta det lugnare imorgon")
+                                let goalPercent = Int((Double(activityData?.steps ?? 0) / Double(stepsGoal)) * 100)
+                                Text("\(goalPercent)% av dagsmålet")
                                     .font(.subheadline.weight(.medium))
                                     .foregroundStyle(Color.vitalyTextPrimary)
                             }
 
                             Spacer()
 
-                            Image(systemName: "checkmark.circle.fill")
+                            Image(systemName: (activityData?.steps ?? 0) >= stepsGoal ? "checkmark.circle.fill" : "circle")
                                 .font(.system(size: 24))
-                                .foregroundStyle(Color.vitalyExcellent)
+                                .foregroundStyle((activityData?.steps ?? 0) >= stepsGoal ? Color.vitalyExcellent : Color.vitalyTextSecondary)
                         }
                     }
                     .transition(.asymmetric(
@@ -403,10 +447,6 @@ struct ActivityTimelineDetailRow: View {
             }
 
             Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundStyle(Color.vitalyTextSecondary)
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 14)
@@ -452,34 +492,39 @@ struct ActivityTimelineDetailRow: View {
 
 #Preview {
     NavigationStack {
-        StrainDetailEnhancedView(activityData: ActivityData(
-            id: "1",
-            date: Date(),
-            steps: 8500,
-            activeCalories: 450,
-            totalCalories: 2100,
-            distance: 6500,
-            exerciseMinutes: 45,
-            standHours: 10,
-            workouts: [
-                WorkoutSummary(
-                    id: "1",
-                    workoutType: "Löpning",
-                    duration: 1800,
-                    calories: 250,
-                    startTime: Date().addingTimeInterval(-3600),
-                    averageHeartRate: 145
-                ),
-                WorkoutSummary(
-                    id: "2",
-                    workoutType: "Styrketräning",
-                    duration: 2700,
-                    calories: 200,
-                    startTime: Date().addingTimeInterval(-7200),
-                    averageHeartRate: 125
-                )
-            ]
-        ))
+        StrainDetailEnhancedView(
+            activityData: ActivityData(
+                id: "1",
+                date: Date(),
+                steps: 8500,
+                activeCalories: 450,
+                totalCalories: 2100,
+                distance: 6500,
+                exerciseMinutes: 45,
+                standHours: 10,
+                workouts: [
+                    WorkoutSummary(
+                        id: "1",
+                        workoutType: "Löpning",
+                        duration: 1800,
+                        calories: 250,
+                        startTime: Date().addingTimeInterval(-3600),
+                        averageHeartRate: 145
+                    ),
+                    WorkoutSummary(
+                        id: "2",
+                        workoutType: "Styrketräning",
+                        duration: 2700,
+                        calories: 200,
+                        startTime: Date().addingTimeInterval(-7200),
+                        averageHeartRate: 125
+                    )
+                ]
+            ),
+            yesterdaySteps: 9200,
+            weeklyAverageSteps: 8750,
+            stepsGoal: 10000
+        )
     }
     .preferredColorScheme(.dark)
 }

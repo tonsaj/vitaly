@@ -51,12 +51,12 @@ enum InsightType: String, Codable {
 
     var title: String {
         switch self {
-        case .dailySummary: return "Daglig sammanfattning"
-        case .sleepAnalysis: return "Sömnanalys"
-        case .activityTrend: return "Aktivitetstrend"
-        case .recoveryAdvice: return "Återhämtningsråd"
-        case .heartHealth: return "Hjärthälsa"
-        case .weeklyReport: return "Veckorapport"
+        case .dailySummary: return "Daily Summary"
+        case .sleepAnalysis: return "Sleep Analysis"
+        case .activityTrend: return "Activity Trend"
+        case .recoveryAdvice: return "Recovery Advice"
+        case .heartHealth: return "Heart Health"
+        case .weeklyReport: return "Weekly Report"
         }
     }
 }
