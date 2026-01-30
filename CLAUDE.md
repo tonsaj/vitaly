@@ -113,7 +113,7 @@ iOSHealth/
 │   ├── Auth/Views/                  # LoginView, OnboardingView (5 pages)
 │   ├── Dashboard/Views/             # DashboardView, MainTabView
 │   ├── Fitness/Views/               # FitnessView (no NavigationStack!)
-│   ├── Biology/Views/               # BiologyView, WeightChartView, WaistChartView
+│   ├── Biology/Views/               # BiologyView (inline weight/waist trends)
 │   ├── AI/Views/                    # AIInsightsView, AIChatView
 │   └── Settings/Views/              # SettingsView (Developer section)
 └── Resources/
@@ -187,6 +187,12 @@ SleepData includes detailed sleep stages:
 - `awake` (seconds) - Goal: ≤10% of total
 
 Display format: Use hours and minutes (e.g., "4h 49m" not "289m")
+
+### BiologyView
+- Weight and waist trend charts are displayed **inline** (not as separate sheets)
+- Shared types (`TimePeriod`, `WeightDataPoint`, `WaistDataPoint`) are defined at file scope in BiologyView.swift and used by WeightChartView/WaistChartView
+- Data loading order matters: load trend data first, set `viewModel.firestoreWeight`/`firestoreWaist`, then call `viewModel.loadData()` (so AI analysis gets correct values)
+- `currentMeasurementsCard` shows weight & waist prominently at top, tappable to open BodyMeasurementView
 
 ### FitnessView
 **Important:** FitnessView must NOT have a NavigationStack wrapper - it causes gesture conflicts with TabView.
