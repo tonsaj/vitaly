@@ -13,22 +13,6 @@ struct WeightChartView: View {
     @State private var previousWeight: Double?
     @State private var latestWeightDate: Date?
 
-    enum TimePeriod: String, CaseIterable {
-        case oneMonth = "1M"
-        case threeMonths = "3M"
-        case sixMonths = "6M"
-        case oneYear = "1Y"
-
-        var days: Int {
-            switch self {
-            case .oneMonth: return 30
-            case .threeMonths: return 90
-            case .sixMonths: return 180
-            case .oneYear: return 365
-            }
-        }
-    }
-
     var body: some View {
         NavigationStack {
             ZStack {
@@ -468,14 +452,7 @@ struct WeightChartView: View {
     }
 }
 
-// MARK: - Data Models
-
-struct WeightDataPoint: Identifiable {
-    let id = UUID()
-    let date: Date
-    let weight: Double
-    let normalizedValue: Double
-}
+// WeightDataPoint and TimePeriod are defined in BiologyView.swift
 
 #Preview {
     WeightChartView(

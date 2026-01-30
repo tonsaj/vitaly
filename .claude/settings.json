@@ -1,4 +1,10 @@
 {
+  "env": {
+    "SIMULATOR_ID": "A745E301-55E9-46F7-B77A-5B8A8ECC0C5A",
+    "IPHONE_DEVICE_ID": "F4CB09B8-6394-55B6-BC8C-D9CF03AD0561",
+    "XCODE_PROJECT": "/Users/tonsaj/Workspace/iOSHealth/Vitaly.xcodeproj",
+    "BUNDLE_ID": "com.perfectfools.vitaly"
+  },
   "hooks": {
     "PostToolUse": [
       {
@@ -14,10 +20,9 @@
       }
     ]
   },
-  "env": {
-    "SIMULATOR_ID": "A745E301-55E9-46F7-B77A-5B8A8ECC0C5A",
-    "IPHONE_DEVICE_ID": "F4CB09B8-6394-55B6-BC8C-D9CF03AD0561",
-    "XCODE_PROJECT": "/Users/tonsaj/Workspace/iOSHealth/Vitaly.xcodeproj",
-    "BUNDLE_ID": "com.perfectfools.vitaly"
+  "permissions": {
+    "allow": [
+      "mcp__xcode__xcode_screenshot"
+    ]
   }
 }

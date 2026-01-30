@@ -18,6 +18,7 @@ final class BiologyViewModel {
     var vo2MaxHistory: [DailyValue] = []
     var hrvHistory: [DailyValue] = []
     var rhrHistory: [DailyValue] = []
+    var weightHistory: [DailyValue] = []
 
     var recentWorkouts: [WorkoutSummary] = []
 
@@ -26,10 +27,12 @@ final class BiologyViewModel {
     var isLoadingAI = false
     var aiSummary: String?
     var error: Error?
-    private var hasLoadedAI = false
+    var hasLoadedAI = false
 
     // MARK: - User Profile
     var heightCm: Double?
+    var firestoreWeight: Double?
+    var firestoreWaist: Double?
 
     // MARK: - Dependencies
     private let healthKitService: HealthKitService
@@ -102,7 +105,7 @@ final class BiologyViewModel {
     // MARK: - Helper Methods
 
     private func calculateBMI() -> Double? {
-        guard let weight = bodyMass, let height = heightCm, height > 0 else { return nil }
+        guard let weight = firestoreWeight ?? bodyMass, let height = heightCm, height > 0 else { return nil }
         let heightM = height / 100.0
         return weight / (heightM * heightM)
     }
@@ -139,6 +142,7 @@ final class BiologyViewModel {
             async let hrvHist = healthKitService.fetchHRVHistory(for: 30)
             async let rhrHist = healthKitService.fetchRHRHistory(for: 30)
             async let workouts = healthKitService.fetchRecentWorkouts(limit: 5)
+            async let weightHist = healthKitService.fetchWeightHistory(for: 90)
 
             self.vo2Max = try await vo2
             self.bodyFatPercentage = try await bodyFat
@@ -148,6 +152,7 @@ final class BiologyViewModel {
             self.hrvHistory = try await hrvHist
             self.rhrHistory = try await rhrHist
             self.recentWorkouts = try await workouts
+            self.weightHistory = try await weightHist
 
             // Sätt senaste HRV och RHR från historiken
             self.latestHRV = hrvHistory.last(where: { $0.value > 0 })?.value
@@ -171,22 +176,25 @@ final class BiologyViewModel {
         isLoadingAI = true
 
         do {
-            // Collect body data
-            let weightText = bodyMass != nil ? "\(String(format: "%.1f", bodyMass!)) kg" : "not available"
+            // Collect body data - prefer Firestore weight over HealthKit
+            let currentWeight = firestoreWeight ?? bodyMass
+            let weightText = currentWeight != nil ? "\(String(format: "%.1f", currentWeight!)) kg" : "not available"
             let bmiText = calculateBMI() != nil ? String(format: "%.1f", calculateBMI()!) : "not available"
             let bodyFatText = bodyFatPercentage != nil ? "\(String(format: "%.1f", bodyFatPercentage!))%" : "not available"
             let lbmText = leanBodyMass != nil ? "\(String(format: "%.1f", leanBodyMass!)) kg" : "not available"
             let vo2Text = vo2Max != nil ? "\(String(format: "%.1f", vo2Max!)) ml/kg/min" : "not available"
+            let waistText = firestoreWaist != nil ? "\(String(format: "%.0f", firestoreWaist!)) cm" : "not available"
 
             let prompt = """
             Analyze this body data in English (max 2-3 sentences):
             - Weight: \(weightText)
+            - Waist circumference: \(waistText)
             - BMI: \(bmiText)
             - Body Fat: \(bodyFatText)
             - Lean Body Mass: \(lbmText)
             - VO2 Max: \(vo2Text)
 
-            Provide a brief health status summary. If data is missing, mention what data is needed for better analysis.
+            Provide a brief health status summary focusing on body composition and cardiovascular risk indicators. If data is missing, mention what data is needed for better analysis.
 
             IMPORTANT: Do NOT use any markdown formatting like **bold**, *italic*, bullet points, or emojis. Write plain text only.
             NEVER mention nutrition, diet, food, eating, meals, or any dietary advice.

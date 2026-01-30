@@ -4,17 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vitaly - Your Health, Simplified</title>
+    <meta name="description" content="Transform your Apple Health data into actionable insights. Track recovery, sleep, and heart health with AI-powered recommendations.">
+    <meta name="theme-color" content="#0D0D12">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #F27340;
-            --secondary: #FA9973;
+            --primary-light: #FA9973;
             --background: #0D0D12;
             --card: #1A1A1F;
+            --card-hover: #222228;
             --text-primary: #F2F2F2;
             --text-secondary: #99948C;
+            --sleep: #9980D9;
+            --activity: #F28C4D;
+            --heart: #F25966;
+            --recovery: #FFB359;
         }
 
         * {
@@ -23,222 +30,1162 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--background);
             color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(13, 13, 18, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
         }
 
-        .hero {
-            text-align: center;
-            padding: 80px 20px;
-            background: linear-gradient(180deg, var(--card) 0%, var(--background) 100%);
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
         }
 
-        .logo {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 24px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 28px;
+        .nav-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 48px;
         }
 
-        h1 {
-            font-size: 48px;
+        .nav-logo-text {
+            font-size: 20px;
             font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-cta {
+            background: var(--primary);
+            color: white !important;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600 !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .nav-cta:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 20px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
+            background: linear-gradient(180deg,
+                #2a1810 0%,
+                #1a120c 30%,
+                var(--background) 100%);
+            z-index: 0;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(242, 115, 64, 0.15) 0%, transparent 60%);
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(242, 115, 64, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+        }
+
+        .hero-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 32px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hero-icon svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 20px 40px rgba(242, 115, 64, 0.3));
+        }
+
+        .hero h1 {
+            font-size: clamp(48px, 10vw, 80px);
+            font-weight: 800;
+            letter-spacing: -2px;
             margin-bottom: 16px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .tagline {
-            font-size: 20px;
+        .hero-tagline {
+            font-size: clamp(20px, 4vw, 28px);
+            font-weight: 300;
             color: var(--text-secondary);
-            margin-bottom: 40px;
+            margin-bottom: 24px;
+        }
+
+        .hero-tagline span {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .hero-description {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 560px;
+            margin: 0 auto 48px;
+            line-height: 1.8;
+        }
+
+        .hero-cta {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
         }
 
         .app-store-badge {
             display: inline-block;
-            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .app-store-badge:hover {
+            transform: scale(1.05);
         }
 
         .app-store-badge img {
-            height: 54px;
+            height: 60px;
         }
 
+        .hero-note {
+            font-size: 14px;
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            opacity: 0.6;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
+        }
+
+        /* Features Section */
         .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 24px;
-            padding: 60px 20px;
+            padding: 120px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .feature {
-            background: var(--card);
-            padding: 32px;
-            border-radius: 20px;
+        .section-header {
             text-align: center;
+            margin-bottom: 80px;
         }
+
+        .section-label {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary);
+            margin-bottom: 16px;
+            padding: 8px 16px;
+            background: rgba(242, 115, 64, 0.1);
+            border-radius: 20px;
+        }
+
+        .section-title {
+            font-size: clamp(32px, 6vw, 48px);
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 40px 32px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--feature-color, var(--primary)), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            background: var(--card-hover);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card.sleep { --feature-color: var(--sleep); }
+        .feature-card.activity { --feature-color: var(--activity); }
+        .feature-card.heart { --feature-color: var(--heart); }
+        .feature-card.ai { --feature-color: var(--primary); }
 
         .feature-icon {
-            margin-bottom: 16px;
-            height: 48px;
+            width: 64px;
+            height: 64px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .feature-card h3 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .feature-list {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .feature-list-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .feature-list-item svg {
+            flex-shrink: 0;
+        }
+
+        /* Screenshots Section */
+        .screenshots {
+            padding: 120px 20px;
+            background: linear-gradient(180deg, var(--background) 0%, var(--card) 50%, var(--background) 100%);
+            overflow: hidden;
+        }
+
+        .screenshots-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .phone-showcase {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin-top: 60px;
+            perspective: 1000px;
+        }
+
+        .phone-mockup {
+            width: 280px;
+            height: 580px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            position: relative;
+            box-shadow:
+                0 50px 100px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            transform: rotateY(-5deg);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .phone-mockup:hover {
+            transform: rotateY(0deg) translateY(-10px);
+        }
+
+        .phone-mockup::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 28px;
+            background: #000;
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: var(--background);
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen-header {
+            height: 200px;
+            background: linear-gradient(180deg, #2a1810 0%, #1a120c 60%, var(--background) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 40px;
+        }
+
+        .screen-sun {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 12px;
+        }
+
+        .screen-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .screen-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .screen-cards {
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .screen-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .screen-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .feature h3 {
+        .screen-card-icon.sleep { background: rgba(153, 128, 217, 0.2); }
+        .screen-card-icon.heart { background: rgba(242, 89, 102, 0.2); }
+        .screen-card-icon.activity { background: rgba(242, 140, 77, 0.2); }
+
+        .screen-card-content {
+            flex: 1;
+        }
+
+        .screen-card-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .screen-card-value {
             font-size: 18px;
             font-weight: 600;
-            margin-bottom: 8px;
+            color: var(--text-primary);
         }
 
-        .feature p {
-            color: var(--text-secondary);
-            font-size: 14px;
+        .screen-card-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
         }
 
-        .links {
+        .screen-card-progress {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        /* Download Section */
+        .download {
+            padding: 120px 20px;
             text-align: center;
-            padding: 40px 20px;
-            border-top: 1px solid var(--card);
         }
 
-        .links a {
+        .download-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .download h2 {
+            font-size: clamp(32px, 6vw, 48px);
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+
+        .download p {
+            font-size: 18px;
             color: var(--text-secondary);
-            text-decoration: none;
-            margin: 0 16px;
-            font-size: 14px;
-            transition: color 0.2s;
+            margin-bottom: 40px;
+            line-height: 1.8;
         }
 
-        .links a:hover {
+        .download-badge {
+            display: inline-block;
+            transition: all 0.3s ease;
+            margin-bottom: 24px;
+        }
+
+        .download-badge:hover {
+            transform: scale(1.05);
+        }
+
+        .download-badge img {
+            height: 60px;
+        }
+
+        .download-features {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .download-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .download-feature svg {
             color: var(--primary);
         }
 
+        /* Footer */
         footer {
-            text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-logo-text {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .footer-links a {
             color: var(--text-secondary);
+            text-decoration: none;
             font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-copy {
+            width: 100%;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 16px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 100px 20px 60px;
+            }
+
+            .hero-icon {
+                width: 80px;
+                height: 80px;
+            }
+
+            .features {
+                padding: 80px 20px;
+            }
+
+            .section-header {
+                margin-bottom: 48px;
+            }
+
+            .feature-card {
+                padding: 32px 24px;
+            }
+
+            .phone-showcase {
+                flex-direction: column;
+                gap: 24px;
+            }
+
+            .phone-mockup {
+                width: 240px;
+                height: 500px;
+                transform: rotateY(0);
+            }
+
+            .screenshots {
+                padding: 80px 20px;
+            }
+
+            .download {
+                padding: 80px 20px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .download-features {
+                flex-direction: column;
+                align-items: center;
+                gap: 16px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="hero">
-        <div class="logo">☀️</div>
-        <h1>Vitaly</h1>
-        <p class="tagline">Your Health, Simplified</p>
-        <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto;">
-            Transform your Apple Health data into actionable insights. Track recovery, sleep, and heart health with AI-powered recommendations.
-        </p>
-        <a href="https://apps.apple.com/app/vitaly/id6757679659" class="app-store-badge">
-            <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store">
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="nav-logo">
+            <div class="nav-logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="5" fill="white"/>
+                    <path d="M12 2V4M12 20V22M22 12H20M4 12H2M19.07 4.93L17.66 6.34M6.34 17.66L4.93 19.07M19.07 19.07L17.66 17.66M6.34 6.34L4.93 4.93" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <span class="nav-logo-text">Vitaly</span>
         </a>
-    </div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#screenshots">Preview</a>
+            <a href="support.html">Support</a>
+            <a href="https://apps.apple.com/app/vitaly/id6757679659" class="nav-cta">Download</a>
+        </div>
+    </nav>
 
-    <div class="features">
-        <div class="feature">
-            <div class="feature-icon">
-                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-glow"></div>
+        <div class="hero-content">
+            <div class="hero-icon animate-in">
+                <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
-                        <linearGradient id="sleepGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#9980D9"/>
-                            <stop offset="100%" style="stop-color:#7B61C4"/>
-                        </linearGradient>
-                    </defs>
-                    <path d="M24 4C12.95 4 4 12.95 4 24C4 35.05 12.95 44 24 44C35.05 44 44 35.05 44 24C44 23.45 43.97 22.91 43.92 22.38C42.35 25.73 38.94 28 35 28C29.48 28 25 23.52 25 18C25 13.06 28.27 8.87 32.73 7.55C30.11 5.35 26.71 4 24 4Z" fill="url(#sleepGrad)"/>
-                    <circle cx="36" cy="10" r="2" fill="#FFC7A6"/>
-                    <circle cx="40" cy="16" r="1.5" fill="#FFC7A6" opacity="0.7"/>
-                    <circle cx="42" cy="8" r="1" fill="#FFC7A6" opacity="0.5"/>
-                </svg>
-            </div>
-            <h3>Sleep Analysis</h3>
-            <p>Deep dive into your sleep stages and quality with detailed breakdowns</p>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">
-                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#F25966"/>
-                            <stop offset="100%" style="stop-color:#E84555"/>
-                        </linearGradient>
-                    </defs>
-                    <path d="M24 42L21.03 39.27C10.8 30 4 23.84 4 16.25C4 10.09 8.84 5.25 15 5.25C18.48 5.25 21.82 6.87 24 9.45C26.18 6.87 29.52 5.25 33 5.25C39.16 5.25 44 10.09 44 16.25C44 23.84 37.2 30 26.97 39.27L24 42Z" fill="url(#heartGrad)"/>
-                    <path d="M12 22H18L21 16L25 28L29 20L32 22H38" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            <h3>Heart Health</h3>
-            <p>Track HRV, resting heart rate, and trends over time</p>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">
-                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="recoveryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#FFB359"/>
+                        <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FA9973"/>
                             <stop offset="100%" style="stop-color:#F27340"/>
                         </linearGradient>
+                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
                     </defs>
-                    <rect x="8" y="6" width="32" height="36" rx="6" fill="url(#recoveryGrad)"/>
-                    <rect x="18" y="2" width="12" height="6" rx="2" fill="url(#recoveryGrad)"/>
-                    <rect x="14" y="16" width="20" height="20" rx="3" fill="#0D0D12" opacity="0.3"/>
-                    <path d="M24 18V30M24 30L30 24M24 30L18 24" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="60" cy="60" r="25" fill="url(#sunGrad)" filter="url(#glow)"/>
+                    <g stroke="url(#sunGrad)" stroke-width="3" stroke-linecap="round" filter="url(#glow)">
+                        <line x1="60" y1="15" x2="60" y2="28"/>
+                        <line x1="60" y1="92" x2="60" y2="105"/>
+                        <line x1="105" y1="60" x2="92" y2="60"/>
+                        <line x1="28" y1="60" x2="15" y2="60"/>
+                        <line x1="91.82" y1="28.18" x2="82.63" y2="37.37"/>
+                        <line x1="37.37" y1="82.63" x2="28.18" y2="91.82"/>
+                        <line x1="91.82" y1="91.82" x2="82.63" y2="82.63"/>
+                        <line x1="37.37" y1="37.37" x2="28.18" y2="28.18"/>
+                    </g>
                 </svg>
             </div>
-            <h3>Recovery Score</h3>
-            <p>Know when to push hard and when to rest</p>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">
-                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="aiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#F27340"/>
-                            <stop offset="100%" style="stop-color:#FA9973"/>
-                        </linearGradient>
-                    </defs>
-                    <circle cx="24" cy="26" r="16" fill="url(#aiGrad)"/>
-                    <circle cx="18" cy="24" r="3" fill="white"/>
-                    <circle cx="30" cy="24" r="3" fill="white"/>
-                    <circle cx="18" cy="24" r="1.5" fill="#0D0D12"/>
-                    <circle cx="30" cy="24" r="1.5" fill="#0D0D12"/>
-                    <path d="M19 32C19 32 21.5 35 24 35C26.5 35 29 32 29 32" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M14 10L16 14L20 12" stroke="#FFC7A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M34 10L32 14L28 12" stroke="#FFC7A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="24" cy="6" r="2" fill="#FFC7A6"/>
-                </svg>
+            <h1 class="animate-in delay-1">Vitaly</h1>
+            <p class="hero-tagline animate-in delay-2">Your Health, <span>Simplified</span></p>
+            <p class="hero-description animate-in delay-3">
+                Transform your Apple Health data into actionable insights. Track recovery, sleep, and heart health with AI-powered recommendations tailored to you.
+            </p>
+            <div class="hero-cta animate-in delay-4">
+                <a href="https://apps.apple.com/app/vitaly/id6757679659" class="app-store-badge">
+                    <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store">
+                </a>
+                <p class="hero-note">Free download. iOS 17.0 or later.</p>
             </div>
-            <h3>AI Insights</h3>
-            <p>Personalized recommendations based on your unique data</p>
         </div>
-    </div>
+        <div class="scroll-indicator">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M19 12l-7 7-7-7"/>
+            </svg>
+            Scroll to explore
+        </div>
+    </section>
 
-    <div class="links">
-        <a href="privacy.html">Privacy Policy</a>
-        <a href="support.html">Support</a>
-        <a href="mailto:support@vitaly.app">Contact</a>
-    </div>
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <span class="section-label">Features</span>
+            <h2 class="section-title">Everything you need to optimize your health</h2>
+            <p class="section-subtitle">Vitaly connects with Apple Health to give you deep insights into your body and help you make better decisions.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card sleep">
+                <div class="feature-icon">
+                    <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                        <defs>
+                            <linearGradient id="sleepGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#9980D9"/>
+                                <stop offset="100%" style="stop-color:#7B61C4"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M24 4C12.95 4 4 12.95 4 24C4 35.05 12.95 44 24 44C35.05 44 44 35.05 44 24C44 23.45 43.97 22.91 43.92 22.38C42.35 25.73 38.94 28 35 28C29.48 28 25 23.52 25 18C25 13.06 28.27 8.87 32.73 7.55C30.11 5.35 26.71 4 24 4Z" fill="url(#sleepGrad2)"/>
+                        <circle cx="36" cy="10" r="2" fill="#FFC7A6"/>
+                        <circle cx="40" cy="16" r="1.5" fill="#FFC7A6" opacity="0.7"/>
+                    </svg>
+                </div>
+                <h3>Sleep Analysis</h3>
+                <p>Understand your sleep quality with detailed stage breakdowns and trends over time.</p>
+                <div class="feature-list">
+                    <div class="feature-list-item">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="#9980D9" stroke-width="1.5"/>
+                            <path d="M5.5 8L7 9.5L10.5 6" stroke="#9980D9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Deep, REM, and light sleep stages
+                    </div>
+                    <div class="feature-list-item">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="#9980D9" stroke-width="1.5"/>
+                            <path d="M5.5 8L7 9.5L10.5 6" stroke="#9980D9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Sleep efficiency scoring
+                    </div>
+                    <div class="feature-list-item">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="#9980D9" stroke-width="1.5"/>
+                            <path d="M5.5 8L7 9.5L10.5 6" stroke="#9980D9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        30-day trend analysis
+                    </div>
+                </div>
+            </div>
+            <div class="feature-card activity">
+                <div class="feature-icon">
+                    <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                        <defs>
+                            <linearGradient id="activityGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#F28C4D"/>
+                                <stop offset="100%" style="stop-color:#F27340"/>
+                            </linearGradient>
+                        </defs>
+                        <circle cx="24" cy="24" r="18" stroke="url(#activityGrad)" stroke-width="4" fill="none"/>
+                        <circle cx="24" cy="24" r="12" stroke="url(#activityGrad)" stroke-width="4" fill="none" opacity="0.6"/>
+                        <circle cx="24" cy="24" r="6" fill="url(#activityGrad)"/>
+                    </svg>
+                </div>
+                <h3>Activity Tracking</h3>
+                <p>Monitor your daily movement, workouts, and calories burned to stay on track.</p>
+                <div class="feature-list">
+                    <div class="feature-list-item">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="#F28C4D" stroke-width="1.5"/>
+                            <path d="M5.5 8L7 9.5L10.5 6" stroke="#F28C4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Steps and distance
+                    </div>
+                    <div class="feature-list-item">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="#F28C4D" stroke-width="1.5"/>
+                            <path d="M5.5 8L7 9.5L10.5 6" stroke="#F28C4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Active and total calories
+                    </div>
+                    <div class="feature-list-item">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="#F28C4D" stroke-width="1.5"/>
+                            <path d="M5.5 8L7 9.5L10.5 6" stroke="#F28C4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Workout detection
+                    </div>
+                </div>
+            </div>
+            <div class="feature-card heart">
+                <div class="feature-icon">
+                    <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                        <defs>
+                            <linearGradient id="heartGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#F25966"/>
+                                <stop offset="100%" style="stop-color:#E84555"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M24 42L21.03 39.27C10.8 30 4 23.84 4 16.25C4 10.09 8.84 5.25 15 5.25C18.48 5.25 21.82 6.87 24 9.45C26.18 6.87 29.52 5.25 33 5.25C39.16 5.25 44 10.09 44 16.25C44 23.84 37.2 30 26.97 39.27L24 42Z" fill="url(#heartGrad2)"/>
+                        <path d="M12 22H18L21 16L25 28L29 20L32 22H38" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>Heart Health</h3>
+                <p>Track your heart rate variability and resting heart rate for deeper recovery insights.</p>
+                <div class="feature-list">
+                    <div class="feature-list-item">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="#F25966" stroke-width="1.5"/>
+                            <path d="M5.5 8L7 9.5L10.5 6" stroke="#F25966" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        HRV monitoring
+                    </div>
+                    <div class="feature-list-item">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="#F25966" stroke-width="1.5"/>
+                            <path d="M5.5 8L7 9.5L10.5 6" stroke="#F25966" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Resting heart rate trends
+                    </div>
+                    <div class="feature-list-item">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="#F25966" stroke-width="1.5"/>
+                            <path d="M5.5 8L7 9.5L10.5 6" stroke="#F25966" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Recovery readiness score
+                    </div>
+                </div>
+            </div>
+            <div class="feature-card ai">
+                <div class="feature-icon">
+                    <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                        <defs>
+                            <linearGradient id="aiGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#F27340"/>
+                                <stop offset="100%" style="stop-color:#FA9973"/>
+                            </linearGradient>
+                        </defs>
+                        <rect x="8" y="12" width="32" height="28" rx="6" fill="url(#aiGrad2)"/>
+                        <circle cx="18" cy="26" r="3" fill="white"/>
+                        <circle cx="30" cy="26" r="3" fill="white"/>
+                        <circle cx="18" cy="26" r="1.5" fill="#0D0D12"/>
+                        <circle cx="30" cy="26" r="1.5" fill="#0D0D12"/>
+                        <path d="M20 34C20 34 22 36 24 36C26 36 28 34 28 34" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M16 8L18 12" stroke="#FFC7A6" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M32 8L30 12" stroke="#FFC7A6" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="24" cy="6" r="2" fill="#FFC7A6"/>
+                    </svg>
+                </div>
+                <h3>AI Insights</h3>
+                <p>Get personalized recommendations powered by AI that understands your unique patterns.</p>
+                <div class="feature-list">
+                    <div class="feature-list-item">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="#F27340" stroke-width="1.5"/>
+                            <path d="M5.5 8L7 9.5L10.5 6" stroke="#F27340" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Daily health summaries
+                    </div>
+                    <div class="feature-list-item">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="#F27340" stroke-width="1.5"/>
+                            <path d="M5.5 8L7 9.5L10.5 6" stroke="#F27340" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Actionable advice
+                    </div>
+                    <div class="feature-list-item">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="#F27340" stroke-width="1.5"/>
+                            <path d="M5.5 8L7 9.5L10.5 6" stroke="#F27340" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Chat with your health data
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
+    <!-- Screenshots Section -->
+    <section class="screenshots" id="screenshots">
+        <div class="screenshots-container">
+            <div class="section-header">
+                <span class="section-label">Preview</span>
+                <h2 class="section-title">Beautiful design meets powerful data</h2>
+                <p class="section-subtitle">A premium dark interface designed for clarity and ease of use.</p>
+            </div>
+            <div class="phone-showcase">
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="screen-content">
+                            <div class="screen-header">
+                                <div class="screen-sun">
+                                    <svg viewBox="0 0 60 60" fill="none">
+                                        <circle cx="30" cy="30" r="12" fill="url(#sunGrad)"/>
+                                        <g stroke="url(#sunGrad)" stroke-width="2" stroke-linecap="round">
+                                            <line x1="30" y1="8" x2="30" y2="14"/>
+                                            <line x1="30" y1="46" x2="30" y2="52"/>
+                                            <line x1="52" y1="30" x2="46" y2="30"/>
+                                            <line x1="14" y1="30" x2="8" y2="30"/>
+                                            <line x1="45.5" y1="14.5" x2="41" y2="19"/>
+                                            <line x1="19" y1="41" x2="14.5" y2="45.5"/>
+                                            <line x1="45.5" y1="45.5" x2="41" y2="41"/>
+                                            <line x1="19" y1="19" x2="14.5" y2="14.5"/>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div class="screen-title">Good Morning</div>
+                                <div class="screen-subtitle">Here is your daily overview</div>
+                            </div>
+                            <div class="screen-cards">
+                                <div class="screen-card">
+                                    <div class="screen-card-icon sleep">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10c0-.28-.01-.55-.04-.81-1.35 2.1-3.68 3.5-6.35 3.5-4.14 0-7.5-3.36-7.5-7.5 0-2.67 1.4-5.01 3.5-6.35-.26-.03-.53-.04-.81-.04z" fill="#9980D9"/>
+                                        </svg>
+                                    </div>
+                                    <div class="screen-card-content">
+                                        <div class="screen-card-label">Sleep</div>
+                                        <div class="screen-card-value">7h 32m</div>
+                                        <div class="screen-card-bar">
+                                            <div class="screen-card-progress" style="width: 85%; background: #9980D9;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="screen-card">
+                                    <div class="screen-card-icon heart">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                            <path d="M12 21l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.18L12 21z" fill="#F25966"/>
+                                        </svg>
+                                    </div>
+                                    <div class="screen-card-content">
+                                        <div class="screen-card-label">HRV</div>
+                                        <div class="screen-card-value">48 ms</div>
+                                        <div class="screen-card-bar">
+                                            <div class="screen-card-progress" style="width: 72%; background: #F25966;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="screen-card">
+                                    <div class="screen-card-icon activity">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="12" r="9" stroke="#F28C4D" stroke-width="2" fill="none"/>
+                                            <circle cx="12" cy="12" r="5" stroke="#F28C4D" stroke-width="2" fill="none" opacity="0.6"/>
+                                        </svg>
+                                    </div>
+                                    <div class="screen-card-content">
+                                        <div class="screen-card-label">Recovery</div>
+                                        <div class="screen-card-value">78%</div>
+                                        <div class="screen-card-bar">
+                                            <div class="screen-card-progress" style="width: 78%; background: linear-gradient(90deg, #F27340, #FFB359);"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section class="download" id="download">
+        <div class="download-content">
+            <span class="section-label">Get Started</span>
+            <h2>Start your health journey today</h2>
+            <p>Download Vitaly for free and unlock the power of your Apple Health data with AI-powered insights.</p>
+            <a href="https://apps.apple.com/app/vitaly/id6757679659" class="download-badge">
+                <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store">
+            </a>
+            <div class="download-features">
+                <div class="download-feature">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M6 10L9 13L14 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Free to download
+                </div>
+                <div class="download-feature">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M6 10L9 13L14 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    HealthKit integration
+                </div>
+                <div class="download-feature">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M6 10L9 13L14 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Privacy-focused
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2026 Perfect Fools AB. All rights reserved.</p>
-        <p style="margin-top: 8px;">Made with ❤️ in Stockholm</p>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <div class="footer-logo-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="5" fill="white"/>
+                        <path d="M12 2V4M12 20V22M22 12H20M4 12H2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <span class="footer-logo-text">Vitaly</span>
+            </div>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="support.html">Support</a>
+                <a href="mailto:support@vitaly.app">Contact</a>
+            </div>
+        </div>
+        <div class="footer-copy">
+            <p>2026 Perfect Fools AB. All rights reserved.</p>
+            <p style="margin-top: 8px; opacity: 0.7;">Made with care in Stockholm</p>
+        </div>
     </footer>
+
+    <script>
+        // Smooth reveal animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .section-header, .phone-mockup').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+            observer.observe(el);
+        });
+
+        // Navbar background on scroll
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.style.background = 'rgba(13, 13, 18, 0.95)';
+            } else {
+                nav.style.background = 'rgba(13, 13, 18, 0.8)';
+            }
+        });
+    </script>
 </body>
 </html>

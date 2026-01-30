@@ -39,8 +39,9 @@ final class AppCoordinator: ObservableObject {
 
     private func setupAuthStateListener() {
         authService.$currentUser
+            .combineLatest(authService.$isAuthResolved)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] user in
+            .sink { [weak self] user, isResolved in
                 guard let self = self else { return }
 
                 if let user = user {
@@ -64,12 +65,14 @@ final class AppCoordinator: ObservableObject {
                             await self.setupDailyNotifications()
                         }
                     }
-                } else {
+                } else if isResolved {
+                    // Only show login screen after Firebase has confirmed no user is signed in
                     self.currentUser = nil
                     self.authState = .unauthenticated
                     self.bodyMeasurementService.setUserId(nil)
                     self.glp1Service.setUserId(nil)
                 }
+                // If not resolved yet, stay in .unknown state (shows splash screen)
             }
             .store(in: &cancellables)
     }

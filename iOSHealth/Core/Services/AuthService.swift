@@ -47,6 +47,7 @@ final class AuthService: ObservableObject {
     @Published var currentUser: User?
     @Published var isLoading = false
     @Published var error: AuthError?
+    @Published var isAuthResolved = false
 
     private let auth = Auth.auth()
     private let db = Firestore.firestore()
@@ -71,6 +72,7 @@ final class AuthService: ObservableObject {
                 } else {
                     self?.currentUser = nil
                 }
+                self?.isAuthResolved = true
             }
         }
     }

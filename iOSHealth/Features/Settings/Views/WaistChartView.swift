@@ -12,22 +12,6 @@ struct WaistChartView: View {
     @State private var previousWaist: Double?
     @State private var latestWaistDate: Date?
 
-    enum TimePeriod: String, CaseIterable {
-        case oneMonth = "1M"
-        case threeMonths = "3M"
-        case sixMonths = "6M"
-        case oneYear = "1Y"
-
-        var days: Int {
-            switch self {
-            case .oneMonth: return 30
-            case .threeMonths: return 90
-            case .sixMonths: return 180
-            case .oneYear: return 365
-            }
-        }
-    }
-
     var body: some View {
         NavigationStack {
             ZStack {
@@ -518,13 +502,7 @@ struct WaistChartView: View {
     }
 }
 
-// MARK: - Data Model
-
-struct WaistDataPoint: Identifiable {
-    let id = UUID()
-    let date: Date
-    let waist: Double
-}
+// WaistDataPoint and TimePeriod are defined in BiologyView.swift
 
 #Preview {
     WaistChartView(measurementService: BodyMeasurementService())

@@ -25,6 +25,11 @@ final class BodyMeasurementService {
     // MARK: - Fetch Measurements
     func fetchMeasurements(limit: Int = 30) async {
         guard let userId = userId else { return }
+
+        // Prevent a smaller fetch from overwriting a larger dataset
+        let currentCount = measurements.count
+        if isLoading && limit <= currentCount { return }
+
         isLoading = true
         error = nil
 
@@ -36,8 +41,14 @@ final class BodyMeasurementService {
                 .limit(to: limit)
                 .getDocuments()
 
-            measurements = snapshot.documents.compactMap { doc in
+            let fetched = snapshot.documents.compactMap { doc in
                 try? doc.data(as: BodyMeasurement.self)
+            }
+
+            // Only update if we got at least as many results as we already have,
+            // or if this is a fresh fetch (no existing data)
+            if fetched.count >= currentCount || currentCount == 0 {
+                measurements = fetched
             }
         } catch {
             self.error = error.localizedDescription
