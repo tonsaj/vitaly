@@ -56,7 +56,7 @@
 | **iOS Version** | 17.0+ |
 | **Language** | Swift 5.9+ / SwiftUI |
 | **Backend** | Firebase (Auth, Firestore) |
-| **AI** | Google Gemini 2.0 Flash |
+| **AI** | Google Gemini (Flash/3 Preview, selectable in Settings) |
 
 ## Quick Deploy
 
@@ -104,16 +104,18 @@ iOSHealth/
 │   │   ├── HealthKitService.swift   # HealthKit queries
 │   │   ├── GeminiService.swift      # AI with ExtendedHealthContext
 │   │   ├── BodyMeasurementService.swift  # Weight/waist tracking
-│   │   └── GLP1Service.swift        # GLP-1 medication tracking
+│   │   ├── GLP1Service.swift        # GLP-1 medication tracking
+│   │   └── HealthCheckupService.swift   # Lab results CRUD (Firestore)
 │   └── Models/
 │       ├── User.swift               # User profile with birthDate, heightCm
 │       ├── SleepData.swift, ActivityData.swift, HeartData.swift
-│       └── AIInsight.swift
+│       ├── AIInsight.swift
+│       └── HealthCheckup.swift      # LabValue, LabCategory, HealthCheckup
 ├── Features/
 │   ├── Auth/Views/                  # LoginView, OnboardingView (5 pages)
 │   ├── Dashboard/Views/             # DashboardView, MainTabView
 │   ├── Fitness/Views/               # FitnessView (no NavigationStack!)
-│   ├── Biology/Views/               # BiologyView (inline weight/waist trends)
+│   ├── Biology/Views/               # BiologyView, HealthCheckup views (inline trends + lab insights)
 │   ├── AI/Views/                    # AIInsightsView, AIChatView
 │   └── Settings/Views/              # SettingsView (Developer section)
 └── Resources/
@@ -159,6 +161,8 @@ All AI functions (Daily Summary, Sleep Analysis, Recovery Advice, Chat) have acc
 - GLP-1 treatment info
 - User profile (name, age, height)
 
+- Lab results / health checkups
+
 Via `ExtendedHealthContext` in GeminiService.
 
 ### AI Rules (IMPORTANT)
@@ -172,11 +176,19 @@ IMPORTANT: Do NOT use any markdown formatting. Write plain text only.
 NEVER mention nutrition, diet, food, eating, meals, or any dietary advice.
 ```
 
+### AI Model Selection
+- Configurable in Settings > Developer > AI Model
+- **Gemini 2.0 Flash** (default) - works with medical/health content
+- **Gemini 3 Preview** - stricter safety filters, blocks medical prompts
+- Stored in UserDefaults via `GeminiModelSelection.current`
+- Affects: chat, lab insights, body analysis, generic content generation
+- Other methods (daily overview, sleep, recovery) still use their hardcoded models
+
 ### AI Caching
 AI insights are cached in UserDefaults to reduce API calls:
 - Cache key: `ai_insight_cache_{type}`
 - Valid if: same hour + same day + same data hash
-- Cached methods: `generateDailyOverview`, `generateMetricInsight`, `generateSleepInsight`
+- Cached methods: `generateDailyOverview`, `generateMetricInsight`, `generateSleepInsight`, `generateLabValueInsight`
 - Clear cache: `GeminiService.shared.clearCache()`
 
 ### Sleep Stages
@@ -193,6 +205,19 @@ Display format: Use hours and minutes (e.g., "4h 49m" not "289m")
 - Shared types (`TimePeriod`, `WeightDataPoint`, `WaistDataPoint`) are defined at file scope in BiologyView.swift and used by WeightChartView/WaistChartView
 - Data loading order matters: load trend data first, set `viewModel.firestoreWeight`/`firestoreWaist`, then call `viewModel.loadData()` (so AI analysis gets correct values)
 - `currentMeasurementsCard` shows weight & waist prominently at top, tappable to open BodyMeasurementView
+
+### Health Checkups (Lab Results)
+- Upload PDF/image → Gemini Vision parses lab values → stored in Firestore
+- `HealthCheckupDetailView` shows each lab value with tappable info icon (ℹ️)
+- Tap expands inline AI analysis (lazy loaded, dual cached: in-memory + UserDefaults)
+- `HealthCheckupService` handles CRUD via Firestore (`users/{uid}/healthCheckups`)
+- Lab categories: cholesterol, blood_sugar, liver, kidney, thyroid, blood_count, inflammation, vitamins, hormones, other
+- AI prompt for lab insights uses "health educator" framing to avoid safety filter blocks
+
+### AI Chat
+- Chat prompt is concise: "2-4 sentences, answer the question directly"
+- Full `ExtendedHealthContext` passed (including lab results, GLP-1, body measurements)
+- Do NOT revert to verbose "provide detailed analysis" style
 
 ### FitnessView
 **Important:** FitnessView must NOT have a NavigationStack wrapper - it causes gesture conflicts with TabView.
