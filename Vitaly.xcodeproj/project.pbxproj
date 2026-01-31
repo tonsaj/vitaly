@@ -81,6 +81,11 @@
 		E679C7C6F9E1451C31728ABA /* WavyHeaderExamples.swift in Sources */ = {isa = PBXBuildFile; fileRef = C945FA04B584F6AE5FDCF213 /* WavyHeaderExamples.swift */; };
 		E85532617BBFFAF48E58E2DD /* BiologyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D67ABE67CFD210AA0ED8E249 /* BiologyView.swift */; };
 		EF1A0DF848FC413118C28C01 /* ActivityData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3EFB10FA7D0D40A0ECA588 /* ActivityData.swift */; };
+		A1B2C3D4E5F60718A1B2C3D4 /* HealthCheckupDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718A1B2C3D5 /* HealthCheckupDetailView.swift */; };
+		A1B2C3D4E5F60718A1B2C3D6 /* HealthCheckup.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718A1B2C3D7 /* HealthCheckup.swift */; };
+		A1B2C3D4E5F60718A1B2C3D8 /* HealthCheckupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718A1B2C3D9 /* HealthCheckupService.swift */; };
+		B3A1C2D4E5F60718A1B2C3E0 /* HealthCheckupListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3A1C2D4E5F60718A1B2C3E1 /* HealthCheckupListView.swift */; };
+		B3A1C2D4E5F60718A1B2C3E2 /* HealthCheckupUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3A1C2D4E5F60718A1B2C3E3 /* HealthCheckupUploadView.swift */; };
 		EF5D294D764BBAB4B7A81427 /* GLP1Treatment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C92AD5BBF5B597341DE7077 /* GLP1Treatment.swift */; };
 		F1FDCADFB4355477C82C30B4 /* HealthMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B18CE7FE36375AD5E7F7F69 /* HealthMetric.swift */; };
 		F6C3C5DF9F332BD31514A6E5 /* WorkoutSummaryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD887CB4A3C0DA9452C185B /* WorkoutSummaryCard.swift */; };
@@ -185,6 +190,11 @@
 		F6958094C6632BC0BDE5065A /* RecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryView.swift; sourceTree = "<group>"; };
 		F9DA8C3A4C26DAD07A4F22DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FB886073FD89DFD3D7FB19C2 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718A1B2C3D5 /* HealthCheckupDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthCheckupDetailView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718A1B2C3D7 /* HealthCheckup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthCheckup.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718A1B2C3D9 /* HealthCheckupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthCheckupService.swift; sourceTree = "<group>"; };
+		B3A1C2D4E5F60718A1B2C3E1 /* HealthCheckupListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthCheckupListView.swift; sourceTree = "<group>"; };
+		B3A1C2D4E5F60718A1B2C3E3 /* HealthCheckupUploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthCheckupUploadView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -284,6 +294,7 @@
 				72098DEFD49AE49090D4D95A /* AIInsight.swift */,
 				3CC602E0CA1893BB49A21EAB /* BodyMeasurement.swift */,
 				1C92AD5BBF5B597341DE7077 /* GLP1Treatment.swift */,
+				A1B2C3D4E5F60718A1B2C3D7 /* HealthCheckup.swift */,
 				6B18CE7FE36375AD5E7F7F69 /* HealthMetric.swift */,
 				C14A2AE3F7C42268CA42E846 /* HealthReferenceService.swift */,
 				3B7098C2A1DEDACE003B68F0 /* HeartData.swift */,
@@ -414,6 +425,7 @@
 				D69859C5C3BA61FC581F5C9A /* FirestoreService.swift */,
 				860463F52DEBB7C263D572EF /* GeminiService.swift */,
 				ED4815193165E81EBCCE8370 /* GLP1Service.swift */,
+				A1B2C3D4E5F60718A1B2C3D9 /* HealthCheckupService.swift */,
 				D472CA50AC4733FD4F37116F /* HealthKitService.swift */,
 				A4166911F2849544D20C3DF1 /* NotificationService.swift */,
 				6463995B3B731E0AC0BDF339 /* SyncService.swift */,
@@ -425,6 +437,9 @@
 			isa = PBXGroup;
 			children = (
 				D67ABE67CFD210AA0ED8E249 /* BiologyView.swift */,
+				A1B2C3D4E5F60718A1B2C3D5 /* HealthCheckupDetailView.swift */,
+				B3A1C2D4E5F60718A1B2C3E1 /* HealthCheckupListView.swift */,
+				B3A1C2D4E5F60718A1B2C3E3 /* HealthCheckupUploadView.swift */,
 				6AD887CB4A3C0DA9452C185B /* WorkoutSummaryCard.swift */,
 			);
 			path = Views;
@@ -750,6 +765,11 @@
 				26A7E05E8DB8C91E81F5CC38 /* GeminiService.swift in Sources */,
 				8469E5B8E61D66E653D5638A /* HealthKitService.swift in Sources */,
 				F1FDCADFB4355477C82C30B4 /* HealthMetric.swift in Sources */,
+				A1B2C3D4E5F60718A1B2C3D4 /* HealthCheckupDetailView.swift in Sources */,
+				A1B2C3D4E5F60718A1B2C3D6 /* HealthCheckup.swift in Sources */,
+				A1B2C3D4E5F60718A1B2C3D8 /* HealthCheckupService.swift in Sources */,
+				B3A1C2D4E5F60718A1B2C3E0 /* HealthCheckupListView.swift in Sources */,
+				B3A1C2D4E5F60718A1B2C3E2 /* HealthCheckupUploadView.swift in Sources */,
 				489D4D2FDEB0BC88F96C0C08 /* HealthReferenceService.swift in Sources */,
 				C25307F4D5774C0FEFF9936F /* HealthStatusIndicator.swift in Sources */,
 				18CA6A191E7FA3A39CB9F179 /* HealthViewModel.swift in Sources */,
@@ -846,7 +866,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 202601161651;
+				CURRENT_PROJECT_VERSION = 202601301739;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = WKG6FZ4FHW;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1004,7 +1024,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 202601161651;
+				CURRENT_PROJECT_VERSION = 202601301739;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = WKG6FZ4FHW;
 				ENABLE_NS_ASSERTIONS = NO;

@@ -105,7 +105,7 @@ struct AIInsightsView: View {
             .sheet(isPresented: $showingChat) {
                 AIChatView(
                     viewModel: viewModel,
-                    healthContext: ExtendedHealthContext(
+                    healthContext: extendedContext ?? ExtendedHealthContext(
                         todaySleep: currentHealthData.0,
                         todayActivity: currentHealthData.1,
                         todayHeart: currentHealthData.2,

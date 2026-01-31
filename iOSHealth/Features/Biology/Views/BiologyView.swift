@@ -49,6 +49,9 @@ struct BiologyView: View {
     @State private var weightTrendPrevious: Double?
     @State private var weightTrendLatestDate: Date?
 
+    // Health checkups state
+    @State private var showingHealthCheckups = false
+
     // Waist trend chart state
     @State private var selectedWaistPeriod: TimePeriod = .threeMonths
     @State private var waistTrendData: [WaistDataPoint] = []
@@ -94,6 +97,9 @@ struct BiologyView: View {
 
                             // BMI Card
                             bmiCard
+
+                            // Health Checkups Card
+                            healthCheckupsCard
                         }
                     }
                     .padding(.horizontal, 20)
@@ -109,6 +115,9 @@ struct BiologyView: View {
                     measurementService: coordinator.bodyMeasurementService,
                     healthKitService: coordinator.healthKitService
                 )
+            }
+            .sheet(isPresented: $showingHealthCheckups) {
+                HealthCheckupListView(healthCheckupService: coordinator.healthCheckupService)
             }
             .task {
                 viewModel.updateHeight(coordinator.authService.currentUser?.heightCm)
@@ -807,6 +816,74 @@ struct BiologyView: View {
     }
 
     // MARK: - BMI Card
+    // MARK: - Health Checkups Card
+
+    private var healthCheckupsCard: some View {
+        Button {
+            showingHealthCheckups = true
+        } label: {
+            VitalyCard(cornerRadius: 20) {
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.vitalySleep.opacity(0.15))
+                                .frame(width: 44, height: 44)
+
+                            Image(systemName: "cross.case.fill")
+                                .font(.system(size: 20))
+                                .foregroundStyle(Color.vitalySleep)
+                        }
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Health Checkups")
+                                .font(.headline)
+                                .foregroundStyle(Color.vitalyTextPrimary)
+
+                            if let latest = coordinator.healthCheckupService.latestCheckup {
+                                Text("Last: \(latest.formattedDate)")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.vitalyTextSecondary)
+                            } else {
+                                Text("Upload lab results")
+                                    .font(.caption)
+                                    .foregroundStyle(Color.vitalyTextSecondary)
+                            }
+                        }
+
+                        Spacer()
+
+                        HStack(spacing: 8) {
+                            if let latest = coordinator.healthCheckupService.latestCheckup,
+                               latest.outOfRangeCount > 0 {
+                                Text("\(latest.outOfRangeCount)")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(.white)
+                                    .frame(minWidth: 22, minHeight: 22)
+                                    .background(Color.vitalyHeart, in: Circle())
+                            }
+
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(Color.vitalyTextSecondary.opacity(0.5))
+                        }
+                    }
+
+                    if let latest = coordinator.healthCheckupService.latestCheckup,
+                       let summary = latest.aiSummary, !summary.isEmpty {
+                        Text(summary)
+                            .font(.caption)
+                            .foregroundStyle(Color.vitalyTextSecondary)
+                            .lineLimit(2)
+                            .lineSpacing(2)
+                    }
+                }
+                .padding(4)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
     private var bmiCard: some View {
         VitalyCard(cornerRadius: 20) {
             VStack(alignment: .leading, spacing: 16) {

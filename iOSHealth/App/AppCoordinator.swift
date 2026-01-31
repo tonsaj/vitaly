@@ -21,18 +21,21 @@ final class AppCoordinator: ObservableObject {
     let healthKitService: HealthKitService
     let notificationService: NotificationService
     let glp1Service: GLP1Service
+    let healthCheckupService: HealthCheckupService
     private var cancellables = Set<AnyCancellable>()
 
     init(authService: AuthService? = nil,
          healthKitService: HealthKitService? = nil,
          bodyMeasurementService: BodyMeasurementService? = nil,
          notificationService: NotificationService? = nil,
-         glp1Service: GLP1Service? = nil) {
+         glp1Service: GLP1Service? = nil,
+         healthCheckupService: HealthCheckupService? = nil) {
         self.authService = authService ?? AuthService()
         self.healthKitService = healthKitService ?? HealthKitService()
         self.bodyMeasurementService = bodyMeasurementService ?? BodyMeasurementService()
         self.notificationService = notificationService ?? NotificationService.shared
         self.glp1Service = glp1Service ?? GLP1Service()
+        self.healthCheckupService = healthCheckupService ?? HealthCheckupService()
 
         setupAuthStateListener()
     }
@@ -49,6 +52,7 @@ final class AppCoordinator: ObservableObject {
                     let safeUserId = user.id ?? user.phoneNumber
                     self.bodyMeasurementService.setUserId(safeUserId)
                     self.glp1Service.setUserId(safeUserId)
+                    self.healthCheckupService.setUserId(safeUserId)
 
                     // Check if user has completed onboarding using UserDefaults
                     let hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding_\(safeUserId)")
@@ -71,6 +75,7 @@ final class AppCoordinator: ObservableObject {
                     self.authState = .unauthenticated
                     self.bodyMeasurementService.setUserId(nil)
                     self.glp1Service.setUserId(nil)
+                    self.healthCheckupService.setUserId(nil)
                 }
                 // If not resolved yet, stay in .unknown state (shows splash screen)
             }

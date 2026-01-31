@@ -185,16 +185,26 @@ final class BiologyViewModel {
             let vo2Text = vo2Max != nil ? "\(String(format: "%.1f", vo2Max!)) ml/kg/min" : "not available"
             let waistText = firestoreWaist != nil ? "\(String(format: "%.0f", firestoreWaist!)) cm" : "not available"
 
+            // Only include metrics that have actual data
+            var dataLines: [String] = []
+            if currentWeight != nil { dataLines.append("- Weight: \(weightText)") }
+            if firestoreWaist != nil { dataLines.append("- Waist circumference: \(waistText)") }
+            if calculateBMI() != nil { dataLines.append("- BMI: \(bmiText)") }
+            if bodyFatPercentage != nil { dataLines.append("- Body Fat: \(bodyFatText)") }
+            if leanBodyMass != nil { dataLines.append("- Lean Body Mass: \(lbmText)") }
+            if vo2Max != nil { dataLines.append("- VO2 Max: \(vo2Text)") }
+
+            guard !dataLines.isEmpty else {
+                aiSummary = "Add body measurements to get personalized insights."
+                isLoadingAI = false
+                return
+            }
+
             let prompt = """
             Analyze this body data in English (max 2-3 sentences):
-            - Weight: \(weightText)
-            - Waist circumference: \(waistText)
-            - BMI: \(bmiText)
-            - Body Fat: \(bodyFatText)
-            - Lean Body Mass: \(lbmText)
-            - VO2 Max: \(vo2Text)
+            \(dataLines.joined(separator: "\n"))
 
-            Provide a brief health status summary focusing on body composition and cardiovascular risk indicators. If data is missing, mention what data is needed for better analysis.
+            Provide a brief health status summary focusing ONLY on the available data above. Do not mention missing data.
 
             IMPORTANT: Do NOT use any markdown formatting like **bold**, *italic*, bullet points, or emojis. Write plain text only.
             NEVER mention nutrition, diet, food, eating, meals, or any dietary advice.

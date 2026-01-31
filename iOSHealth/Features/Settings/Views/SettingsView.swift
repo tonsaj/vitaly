@@ -670,6 +670,45 @@ struct SettingsView: View {
                     Divider()
                         .background(Color.vitalyTextSecondary.opacity(0.2))
 
+                    // AI Model Picker
+                    HStack(spacing: 14) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.vitalyPrimary.opacity(0.15))
+                                .frame(width: 36, height: 36)
+
+                            Image(systemName: "brain")
+                                .font(.system(size: 16))
+                                .foregroundStyle(Color.vitalyPrimary)
+                        }
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("AI Model")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(Color.vitalyTextPrimary)
+
+                            Text(GeminiModelSelection.current.displayName)
+                                .font(.caption)
+                                .foregroundStyle(Color.vitalyTextSecondary)
+                        }
+
+                        Spacer()
+
+                        Picker("", selection: Binding(
+                            get: { GeminiModelSelection.current },
+                            set: { GeminiModelSelection.current = $0 }
+                        )) {
+                            ForEach(GeminiModelSelection.allCases, id: \.self) { model in
+                                Text(model.displayName).tag(model)
+                            }
+                        }
+                        .tint(Color.vitalyPrimary)
+                    }
+                    .padding(16)
+
+                    Divider()
+                        .background(Color.vitalyTextSecondary.opacity(0.2))
+
                     Button {
                         markOnboardingComplete()
                     } label: {

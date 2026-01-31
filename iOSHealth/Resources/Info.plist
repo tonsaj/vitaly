@@ -32,11 +32,13 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>202601161651</string>
+	<string>202601301739</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Vitaly behöver tillgång till kameran för att kunna fotografera dina labbresultat och hälsokontroller.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Vitaly behöver tillgång till din hälsodata för att visa dina hälsometriker, analysera dina mönster och ge personliga insikter baserade på din sömn, aktivitet och hjärtdata.</string>
 	<key>NSHealthUpdateUsageDescription</key>

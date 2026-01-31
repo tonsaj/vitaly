@@ -249,6 +249,10 @@ struct InsightsView: View {
         let glp1Treatment = coordinator.glp1Service.treatment
         let glp1Injections = coordinator.glp1Service.medicationLogs
 
+        // Fetch health checkups (lab results)
+        await coordinator.healthCheckupService.fetchCheckups()
+        let healthCheckups = coordinator.healthCheckupService.checkups
+
         // Build user profile
         let user = coordinator.authService.currentUser
         let userProfile = UserHealthProfile(
@@ -271,7 +275,8 @@ struct InsightsView: View {
             bodyMeasurements: bodyMeasurements,
             glp1Treatment: glp1Treatment,
             glp1Injections: glp1Injections,
-            userProfile: userProfile
+            userProfile: userProfile,
+            healthCheckups: healthCheckups
         )
 
         // Set extended context on viewModel so all AI insights have access to background data

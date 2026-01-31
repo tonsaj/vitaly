@@ -62,15 +62,24 @@ final class GeminiService {
     static let shared = GeminiService()
 
     private let model: GenerativeModel
+    private let visionModel: GenerativeModel
     private let cache = AIInsightCache.shared
 
     init(apiKey: String = APIConfig.geminiAPIKey) {
         self.model = GenerativeModel(
-            name: "gemini-2.0-flash",
+            name: "gemini-3-preview",
             apiKey: apiKey,
             generationConfig: GenerationConfig(
                 temperature: 0.7,
                 maxOutputTokens: 1024
+            )
+        )
+        self.visionModel = GenerativeModel(
+            name: "gemini-2.0-flash",
+            apiKey: apiKey,
+            generationConfig: GenerationConfig(
+                temperature: 0.3,
+                maxOutputTokens: 4096
             )
         )
     }
@@ -792,19 +801,24 @@ final class GeminiService {
 
     func chat(message: String, context: ExtendedHealthContext) async throws -> String {
         let prompt = """
-        You are an expert health advisor with access to the user's complete health history.
-        Respond in English. Be helpful and thorough.
+        You are a concise health educator. The user is chatting with you about their health.
+        You have access to their data below, but ONLY mention data that is directly relevant to their question.
+        Keep answers short and conversational (2-4 sentences). Do not write a full report.
 
+        AVAILABLE DATA:
         \(context.description)
 
-        User's question: \(message)
+        User: \(message)
 
-        Provide a detailed, helpful answer based on all available data. Reference specific data points when relevant.
+        Answer the question directly. Reference specific numbers only when relevant to what they asked.
 
         IMPORTANT: Do NOT use any markdown formatting like **bold**, *italic*, bullet points, or emojis. Write plain text only.
+        NEVER mention nutrition, diet, food, eating, meals, or any dietary advice.
+        This is educational information only.
         """
 
-        let response = try await model.generateContent(prompt)
+        let selectedModel = GeminiModelSelection.current
+        let response = try await selectedModel.useFlash ? visionModel.generateContent(prompt) : model.generateContent(prompt)
         return response.text ?? "Could not generate response."
     }
 
@@ -821,10 +835,164 @@ final class GeminiService {
         return try await chat(message: message, context: extendedContext)
     }
 
+    // MARK: - Health Document Parsing (Multimodal)
+
+    func parseHealthDocument(data: Data, mimeType: String) async throws -> HealthCheckup {
+        let prompt = """
+        You are a medical lab report parser. Extract ALL lab values from this health checkup document.
+
+        Return a JSON object with this exact structure:
+        {
+            "title": "Brief description of the report type",
+            "provider": "Name of the healthcare provider/lab if visible, or null",
+            "date": "YYYY-MM-DD if visible, otherwise null",
+            "values": [
+                {
+                    "name": "Full name of the lab test (in English)",
+                    "value": 5.2,
+                    "unit": "mmol/L",
+                    "referenceMin": 0.0,
+                    "referenceMax": 5.0,
+                    "category": "cholesterol"
+                }
+            ],
+            "summary": "Brief plain text summary of the results (2-3 sentences)"
+        }
+
+        Valid categories: cholesterol, blood_sugar, liver, kidney, thyroid, blood_count, inflammation, vitamins, hormones, other
+
+        If the document is in Swedish or another language, translate lab test names to English.
+        Include reference ranges when visible on the document.
+        IMPORTANT: Return ONLY valid JSON, no markdown, no code fences, no extra text.
+        IMPORTANT: Do NOT use any markdown formatting in the summary.
+        NEVER mention nutrition, diet, food, eating, meals, or any dietary advice in the summary.
+        """
+
+        let response = try await visionModel.generateContent(
+            prompt,
+            ModelContent.Part.data(mimetype: mimeType, data)
+        )
+
+        guard let text = response.text else {
+            throw GeminiError.noResponse
+        }
+
+        // Clean response (strip code fences if present)
+        var jsonString = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if jsonString.hasPrefix("```") {
+            let lines = jsonString.components(separatedBy: "\n")
+            let filtered = lines.dropFirst().dropLast()
+            jsonString = filtered.joined(separator: "\n")
+        }
+
+        guard let jsonData = jsonString.data(using: .utf8) else {
+            throw HealthCheckupError.parseFailed
+        }
+
+        struct ParsedReport: Decodable {
+            let title: String?
+            let provider: String?
+            let date: String?
+            let values: [ParsedValue]
+            let summary: String?
+        }
+
+        struct ParsedValue: Decodable {
+            let name: String
+            let value: Double
+            let unit: String
+            let referenceMin: Double?
+            let referenceMax: Double?
+            let category: String?
+        }
+
+        let parsed = try JSONDecoder().decode(ParsedReport.self, from: jsonData)
+
+        let labValues = parsed.values.map { v in
+            LabValue(
+                name: v.name,
+                value: v.value,
+                unit: v.unit,
+                referenceMin: v.referenceMin,
+                referenceMax: v.referenceMax,
+                category: LabCategory(rawValue: v.category ?? "other") ?? .other
+            )
+        }
+
+        var checkupDate = Date()
+        if let dateStr = parsed.date {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            if let d = formatter.date(from: dateStr) {
+                checkupDate = d
+            }
+        }
+
+        return HealthCheckup(
+            date: checkupDate,
+            title: parsed.title ?? "Health Checkup",
+            provider: parsed.provider,
+            labValues: labValues,
+            aiSummary: parsed.summary
+        )
+    }
+
+    // MARK: - Lab Value Insight
+
+    func generateLabValueInsight(labValue: LabValue) async throws -> String {
+        // Create data hash from name + value
+        var hasher = Hasher()
+        hasher.combine(labValue.name)
+        hasher.combine(Int(labValue.value * 100))
+        let dataHash = hasher.finalize()
+
+        let cacheKey = "lab_\(labValue.name.lowercased().replacingOccurrences(of: " ", with: "_"))"
+
+        // Check cache
+        if let cachedInsight = cache.getCached(for: cacheKey, dataHash: dataHash) {
+            return cachedInsight
+        }
+
+        var refContext = ""
+        if let min = labValue.referenceMin, let max = labValue.referenceMax {
+            refContext = "Reference range: \(String(format: "%.1f", min)) - \(String(format: "%.1f", max)) \(labValue.unit). "
+        }
+
+        let prompt = """
+        You are a health educator explaining lab results to a user in simple terms.
+
+        Lab test: \(labValue.name)
+        Result: \(labValue.formattedValue)
+        Status: \(labValue.statusText)
+        \(refContext)
+
+        In max 80 words, provide:
+        1. What this test measures and why it matters (one sentence)
+        2. How this specific result looks (one to two sentences)
+
+        Write in English. Be informative and reassuring.
+
+        IMPORTANT RULES:
+        - Do NOT use any markdown formatting like **bold**, *italic*, bullet points, or emojis. Write plain text only.
+        - NEVER mention nutrition, diet, food, eating, meals, or any dietary advice.
+        - This is educational information only, not medical advice.
+        """
+
+        let selectedModel = GeminiModelSelection.current
+        let response = try await selectedModel.useFlash ? visionModel.generateContent(prompt) : model.generateContent(prompt)
+        let insight = response.text ?? "Could not generate insight."
+
+        // Cache the result
+        cache.cache(insight, for: cacheKey, dataHash: dataHash)
+
+        return insight
+    }
+
     // MARK: - Generic Content Generation
 
     func generateContent(prompt: String) async throws -> String {
-        let response = try await model.generateContent(prompt)
+        let selectedModel = GeminiModelSelection.current
+        let response = try await selectedModel.useFlash ? visionModel.generateContent(prompt) : model.generateContent(prompt)
         return response.text ?? "Could not generate content."
     }
 
@@ -1016,6 +1184,8 @@ struct ExtendedHealthContext {
     let glp1Injections: [MedicationLog]
     // User profile
     let userProfile: UserHealthProfile?
+    // Health checkups (lab results)
+    let healthCheckups: [HealthCheckup]
 
     init(
         todaySleep: SleepData? = nil,
@@ -1027,7 +1197,8 @@ struct ExtendedHealthContext {
         bodyMeasurements: [BodyMeasurement] = [],
         glp1Treatment: GLP1Treatment? = nil,
         glp1Injections: [MedicationLog] = [],
-        userProfile: UserHealthProfile? = nil
+        userProfile: UserHealthProfile? = nil,
+        healthCheckups: [HealthCheckup] = []
     ) {
         self.todaySleep = todaySleep
         self.todayActivity = todayActivity
@@ -1039,6 +1210,7 @@ struct ExtendedHealthContext {
         self.glp1Treatment = glp1Treatment
         self.glp1Injections = glp1Injections
         self.userProfile = userProfile
+        self.healthCheckups = healthCheckups
     }
 
     var description: String {
@@ -1156,6 +1328,43 @@ struct ExtendedHealthContext {
             }
         }
 
+        // Lab results / health checkups
+        if !healthCheckups.isEmpty {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MMM d, yyyy"
+
+            desc += "\nLAB RESULTS:\n"
+            if let latest = healthCheckups.first {
+                desc += "Latest checkup: \(formatter.string(from: latest.date))"
+                if let provider = latest.provider {
+                    desc += " (\(provider))"
+                }
+                desc += "\n"
+
+                let outOfRange = latest.labValues.filter(\.isOutOfRange)
+                if !outOfRange.isEmpty {
+                    desc += "Out of range values:\n"
+                    for val in outOfRange {
+                        desc += "- \(val.name): \(val.formattedValue) [\(val.statusText)]\n"
+                    }
+                }
+
+                for val in latest.labValues.prefix(15) {
+                    if !val.isOutOfRange {
+                        desc += "- \(val.name): \(val.formattedValue)\n"
+                    }
+                }
+
+                if let summary = latest.aiSummary {
+                    desc += "Summary: \(summary)\n"
+                }
+            }
+
+            if healthCheckups.count > 1 {
+                desc += "Previous checkups available: \(healthCheckups.count - 1)\n"
+            }
+        }
+
         return desc.isEmpty ? "No data available" : desc
     }
 }
@@ -1185,6 +1394,37 @@ struct UserHealthProfile {
         if let bf = bodyFatPercentage { desc += "Body fat: \(String(format: "%.1f", bf))%\n" }
         if let vo2 = vo2Max { desc += "VO2 Max: \(String(format: "%.1f", vo2)) ml/kg/min\n" }
         return desc.isEmpty ? "No profile data available" : desc
+    }
+}
+
+// MARK: - Model Selection
+
+enum GeminiModelSelection: String, CaseIterable {
+    case flash = "gemini-2.0-flash"
+    case preview = "gemini-3-preview"
+
+    var displayName: String {
+        switch self {
+        case .flash: return "Gemini 2.0 Flash"
+        case .preview: return "Gemini 3 Preview"
+        }
+    }
+
+    var useFlash: Bool { self == .flash }
+
+    private static let defaultsKey = "gemini_model_selection"
+
+    static var current: GeminiModelSelection {
+        get {
+            guard let raw = UserDefaults.standard.string(forKey: defaultsKey),
+                  let model = GeminiModelSelection(rawValue: raw) else {
+                return .flash
+            }
+            return model
+        }
+        set {
+            UserDefaults.standard.set(newValue.rawValue, forKey: defaultsKey)
+        }
     }
 }
 
