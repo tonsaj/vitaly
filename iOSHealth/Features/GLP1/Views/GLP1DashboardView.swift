@@ -477,7 +477,7 @@ struct GLP1DashboardView: View {
                         .foregroundStyle(Color.vitalyTextSecondary)
                 } else {
                     VStack(spacing: 12) {
-                        ForEach(glp1Service.medicationLogs.prefix(3)) { log in
+                        ForEach(glp1Service.medicationLogs.prefix(10)) { log in
                             activityRow(
                                 icon: "syringe",
                                 color: Color.vitalyPrimary,

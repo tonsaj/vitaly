@@ -9,6 +9,11 @@ enum GLP1Medication: String, Codable, CaseIterable {
     case mounjaro = "mounjaro"
     case saxenda = "saxenda"
     case rybelsus = "rybelsus"
+    case victoza = "victoza"
+    case trulicity = "trulicity"
+    case byetta = "byetta"
+    case bydureon = "bydureon"
+    case lyxumia = "lyxumia"
 
     var displayName: String {
         switch self {
@@ -17,13 +22,21 @@ enum GLP1Medication: String, Codable, CaseIterable {
         case .mounjaro: return "Mounjaro"
         case .saxenda: return "Saxenda"
         case .rybelsus: return "Rybelsus"
+        case .victoza: return "Victoza"
+        case .trulicity: return "Trulicity"
+        case .byetta: return "Byetta"
+        case .bydureon: return "Bydureon"
+        case .lyxumia: return "Lyxumia"
         }
     }
 
     var manufacturer: String {
         switch self {
-        case .ozempic, .wegovy, .saxenda, .rybelsus: return "Novo Nordisk"
+        case .ozempic, .wegovy, .saxenda, .rybelsus, .victoza: return "Novo Nordisk"
         case .mounjaro: return "Eli Lilly"
+        case .trulicity: return "Eli Lilly"
+        case .byetta, .bydureon: return "AstraZeneca"
+        case .lyxumia: return "Sanofi"
         }
     }
 
@@ -31,7 +44,10 @@ enum GLP1Medication: String, Codable, CaseIterable {
         switch self {
         case .ozempic, .wegovy, .rybelsus: return "Semaglutide"
         case .mounjaro: return "Tirzepatide"
-        case .saxenda: return "Liraglutide"
+        case .saxenda, .victoza: return "Liraglutide"
+        case .trulicity: return "Dulaglutide"
+        case .byetta, .bydureon: return "Exenatide"
+        case .lyxumia: return "Lixisenatide"
         }
     }
 
@@ -48,6 +64,16 @@ enum GLP1Medication: String, Codable, CaseIterable {
             return [0.6, 1.2, 1.8, 2.4, 3.0]
         case .rybelsus:
             return [3.0, 7.0, 14.0]
+        case .victoza:
+            return [0.6, 1.2, 1.8]
+        case .trulicity:
+            return [0.75, 1.5, 3.0, 4.5]
+        case .byetta:
+            return [0.005, 0.01] // 5 µg, 10 µg (stored as mg)
+        case .bydureon:
+            return [2.0]
+        case .lyxumia:
+            return [0.01, 0.02] // 10 µg, 20 µg (stored as mg)
         }
     }
 
@@ -57,19 +83,27 @@ enum GLP1Medication: String, Codable, CaseIterable {
         case .ozempic, .wegovy, .mounjaro: return 4
         case .saxenda: return 1
         case .rybelsus: return 4
+        case .victoza: return 1
+        case .trulicity: return 4
+        case .byetta: return 4
+        case .bydureon: return 4
+        case .lyxumia: return 2
         }
     }
 
     /// Dose unit
     var unit: String {
-        return "mg"
+        switch self {
+        case .byetta, .lyxumia: return "µg"
+        default: return "mg"
+        }
     }
 
     /// Is it a weekly or daily medication
     var isWeekly: Bool {
         switch self {
-        case .ozempic, .wegovy, .mounjaro: return true
-        case .saxenda, .rybelsus: return false
+        case .ozempic, .wegovy, .mounjaro, .trulicity, .bydureon: return true
+        case .saxenda, .rybelsus, .victoza, .byetta, .lyxumia: return false
         }
     }
 }
